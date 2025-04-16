@@ -3,23 +3,23 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>LibreTV - 免费在线视频搜索与观看平台</title>
-    <meta name="description" content="LibreTV是一个免费的在线视频搜索平台，无广告、安全，提供来自多个视频源的内容搜索与观看服务，无需注册即可使用。">
-    <meta name="keywords" content="在线视频,免费视频,视频搜索,电影,电视剧,LibreTV">
-    <meta name="author" content="LibreTV Team">
+    <title>Ouonnki TV - 免费在线视频搜索与观看平台</title>
+    <meta name="description" content="Ouonnki TV是一个免费的在线视频搜索平台，无广告、安全，提供来自多个视频源的内容搜索与观看服务，无需注册即可使用。">
+    <meta name="keywords" content="在线视频,免费视频,视频搜索,电影,电视剧,Ouonnki TV">
+    <meta name="author" content="Ouonnki TV Team">
     <meta name="robots" content="index, follow">
     
     <!-- Open Graph / Facebook -->
     <meta property="og:type" content="website">
-    <meta property="og:url" content="https://libretv.is-an.org/">
-    <meta property="og:title" content="LibreTV - 免费在线视频搜索与观看平台">
+    <meta property="og:url" content="https://tv.ouonnki.site/">
+    <meta property="og:title" content="Ouonnki TV - 免费在线视频搜索与观看平台">
     <meta property="og:description" content="搜索并观看来自多个视频源的内容，支持多种设备，无需注册即可使用。">
     <meta property="og:image" content="https://images.icon-icons.com/38/PNG/512/retrotv_5520.png">
     
     <!-- Twitter -->
     <meta property="twitter:card" content="summary_large_image">
-    <meta property="twitter:url" content="https://libretv.is-an.org/">
-    <meta property="twitter:title" content="LibreTV - 免费在线视频搜索与观看平台">
+    <meta property="twitter:url" content="https://tv.ouonnki.site/">
+    <meta property="twitter:title" content="Ouonnki TV - 免费在线视频搜索与观看平台">
     <meta property="twitter:description" content="搜索并观看来自多个视频源的内容，支持多种设备，无需注册即可使用。">
     <meta property="twitter:image" content="https://images.icon-icons.com/38/PNG/512/retrotv_5520.png">
     
@@ -28,7 +28,7 @@
     <link rel="apple-touch-icon" href="https://images.icon-icons.com/38/PNG/512/retrotv_5520.png">
     
     <!-- Canonical URL -->
-    <link rel="canonical" href="https://libretv.is-an.org/">
+    <link rel="canonical" href="https://tv.ouonnki.site/">
     
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="css/styles.css">
@@ -36,7 +36,7 @@
 <body class="page-bg text-white">
     <!-- 将历史记录按钮移到左上角 -->
     <div class="fixed top-4 left-4 z-50">
-        <button onclick="toggleHistory(event)" class="bg-[#222] hover:bg-[#333] border border-[#333] hover:border-white rounded-lg px-4 py-2 transition-colors" aria-label="观看历史">
+        <button onclick="toggleHistory(event)" class="rounded-lg px-4 py-2 transition-colors" aria-label="观看历史">
             <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
             </svg>
@@ -45,7 +45,7 @@
 
     <!-- 设置按钮保留在右上角 -->
     <div class="fixed top-4 right-4 z-50">
-        <button onclick="toggleSettings(event)" class="bg-[#222] hover:bg-[#333] border border-[#333] hover:border-white rounded-lg px-4 py-2 transition-colors" aria-label="打开设置">
+        <button onclick="toggleSettings(event)" class="rounded-lg px-4 py-2 transition-colors" aria-label="打开设置">
             <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"></path>
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
@@ -53,52 +53,52 @@
         </button>
     </div>
     
-    <!-- 历史记录面板 - 标题居中 -->
-    <div id="historyPanel" class="history-panel fixed left-0 top-0 h-full bg-[#111] border-r border-[#333] p-6 z-40 transform -translate-x-full transition-transform duration-300" aria-label="观看历史" aria-hidden="true">
+    <!-- 历史记录面板 -->
+    <div id="historyPanel" class="history-panel fixed left-0 top-0 h-full p-6 z-40 transform -translate-x-full transition-transform duration-300" aria-label="观看历史" aria-hidden="true">
         <div class="flex justify-between items-center mb-6">
-            <button onclick="toggleHistory()" class="text-gray-400 hover:text-white" aria-label="关闭历史">&times;</button>
+            <button onclick="toggleHistory()" class="hover:text-primary" aria-label="关闭历史">&times;</button>
             <h3 class="text-xl font-bold gradient-text mx-auto">观看历史</h3>
-            <div class="w-4"></div> <!-- 添加一个占位元素以确保标题居中 -->
+            <div class="w-4"></div>
         </div>
         <div id="historyList" class="pb-4">
             <!-- 历史记录将在这里动态显示 -->
-            <div class="text-center text-gray-500 py-8">暂无观看记录</div>
+            <div class="text-center text-muted py-8">暂无观看记录</div>
         </div>
-        <div class="mt-4 text-center sticky bottom-0 pb-2 pt-2 bg-[#111]">
-            <button onclick="clearViewingHistory()" class="px-4 py-2 w-full bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 hover:from-indigo-600 hover:via-purple-600 hover:to-pink-600 text-white rounded-lg text-sm transition-all duration-300 shadow-md hover:shadow-lg">
+        <div class="mt-4 text-center sticky bottom-0 pb-2 pt-2">
+            <button onclick="clearViewingHistory()" class="px-4 py-2 w-full rounded-lg text-sm transition-all duration-300 shadow-md hover:shadow-lg">
                 清空历史记录
             </button>
         </div>
     </div>
 
     <!-- 设置面板 -->
-    <div id="settingsPanel" class="settings-panel fixed right-0 top-0 h-full w-80 bg-[#111] border-l border-[#333] p-6 z-40 overflow-y-auto" aria-label="设置面板" aria-hidden="true">
+    <div id="settingsPanel" class="settings-panel fixed right-0 top-0 h-full w-80 p-6 z-40 overflow-y-auto" aria-label="设置面板" aria-hidden="true">
         <div class="flex justify-between items-center mb-6">
             <h3 class="text-xl font-bold gradient-text">设置</h3>
-            <button onclick="toggleSettings()" class="text-gray-400 hover:text-white" aria-label="关闭设置">&times;</button>
+            <button onclick="toggleSettings()" class="hover:text-primary" aria-label="关闭设置">&times;</button>
         </div>
         <div class="space-y-5">
             <!-- 数据源设置区域 -->
-            <div class="p-3 bg-[#151515] rounded-lg shadow-inner">
-                <label class="block text-sm font-medium text-gray-400 mb-3 border-b border-[#333] pb-1">数据源设置</label>
+            <div class="p-3 rounded-lg shadow-inner">
+                <label class="block text-sm font-medium mb-3 pb-1">数据源设置</label>
                 
                 <!-- 批量操作按钮 -->
                 <div class="flex space-x-2 mb-3">
-                    <button onclick="selectAllAPIs(true)" class="px-2 py-1 bg-[#333] hover:bg-[#444] text-white text-xs rounded">全选</button>
-                    <button onclick="selectAllAPIs(false)" class="px-2 py-1 bg-[#333] hover:bg-[#444] text-white text-xs rounded">全不选</button>
-                    <button onclick="selectAllAPIs(true, true)" class="px-2 py-1 bg-[#333] hover:bg-[#444] text-white text-xs rounded">全选普通资源</button>
+                    <button onclick="selectAllAPIs(true)" class="px-2 py-1 text-xs rounded">全选</button>
+                    <button onclick="selectAllAPIs(false)" class="px-2 py-1 text-xs rounded">全不选</button>
+                    <button onclick="selectAllAPIs(true, true)" class="px-2 py-1 text-xs rounded">全选普通资源</button>
                 </div>
                 
-                <!-- API选择区域 - 使用滚动区域 -->
-                <div class="max-h-40 overflow-y-auto bg-[#191919] p-2 rounded-lg mb-3">
+                <!-- API选择区域 -->
+                <div class="max-h-40 overflow-y-auto p-2 rounded-lg mb-3">
                     <div id="apiCheckboxes" class="grid grid-cols-2 gap-2">
                         <!-- 这里将动态插入API复选框 -->
                     </div>
                 </div>
                 
                 <!-- API信息显示 -->
-                <div class="text-xs text-gray-500 flex justify-between items-center">
-                    <span>已选API数量：<span id="selectedApiCount" class="text-white">0</span></span>
+                <div class="text-xs text-muted flex justify-between items-center">
+                    <span>已选API数量：<span id="selectedApiCount" class="text-primary">0</span></span>
                     <span id="siteStatus" class="ml-2"></span>
                 </div>
             </div>
@@ -173,7 +173,7 @@
                     <svg class="w-10 h-10 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z"></path>
                     </svg>
-                    <h1 class="text-5xl font-bold gradient-text">LibreTV</h1>
+                    <h1 class="text-5xl font-bold gradient-text">Ouonnki TV</h1>
                 </div>
                 <p class="text-gray-400 mb-8">自由观影，畅享精彩</p>
             </header>
@@ -220,9 +220,9 @@
                         <svg class="w-6 h-6 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z"></path>
                         </svg>
-                        <span class="gradient-text font-bold">LibreTV</span>
+                        <span class="gradient-text font-bold">Ouonnki TV</span>
                     </div>
-                    <p class="text-gray-500 text-sm mt-2 text-center md:text-left">© 2025 LibreTV - 自由观影，畅享精彩</p>
+                    <p class="text-gray-500 text-sm mt-2 text-center md:text-left">© 2024 Ouonnki TV - 自由观影，畅享精彩</p>
                 </div>
                 
                 <div class="text-center md:text-right">
@@ -259,10 +259,10 @@
             <h2 class="text-2xl font-bold gradient-text mb-6 text-center">使用声明</h2>
             <div class="text-gray-300 space-y-4">
                 <p>
-                    欢迎使用 LibreTV。在开始使用前，请您了解并同意以下条款：
+                    欢迎使用 Ouonnki TV。在开始使用前，请您了解并同意以下条款：
                 </p>
                 <p>
-                    <strong class="text-blue-400">服务性质：</strong> LibreTV 仅提供视频搜索服务，不直接提供、存储或上传任何视频内容。所有搜索结果均来自第三方公开接口。
+                    <strong class="text-blue-400">服务性质：</strong> Ouonnki TV 仅提供视频搜索服务，不直接提供、存储或上传任何视频内容。所有搜索结果均来自第三方公开接口。
                 </p>
                 <p>
                     <strong class="text-blue-400">用户责任：</strong> 用户在使用本站服务时，须遵守相关法律法规，不得利用搜索结果从事侵权行为，如下载、传播未经授权的作品等。
@@ -297,12 +297,12 @@
     {
         "@context": "https://schema.org",
         "@type": "WebSite",
-        "name": "LibreTV",
-        "url": "https://libretv.is-an.org/",
+        "name": "Ouonnki TV",
+        "url": "https://tv.ouonnki.site/",
         "description": "免费在线视频搜索与观看平台",
         "potentialAction": {
             "@type": "SearchAction",
-            "target": "https://libretv.is-an.org/?s={search_term_string}",
+            "target": "https://tv.ouonnki.site/?s={search_term_string}",
             "query-input": "required name=search_term_string"
         }
     }

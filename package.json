@@ -1,0 +1,31 @@
+{
+  "name": "ouonnki-tv",
+  "version": "1.0.0",
+  "description": "Ouonnki TV - 免费在线视频搜索与观看平台",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "lint": "next lint"
+  },
+  "keywords": [
+    "Ouonnki TV",
+    "免费在线视频",
+    "视频搜索",
+    "视频观看"
+  ],
+  "author": "Ouonnki",
+  "license": "ISC",
+  "dependencies": {
+    "next": "^15.3.0",
+    "react": "^19.1.0",
+    "react-dom": "^19.1.0"
+  },
+  "devDependencies": {
+    "@types/node": "22.14.1",
+    "@types/react": "19.1.2",
+    "typescript": "5.8.3"
+  }
+}

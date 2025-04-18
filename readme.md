@@ -8,8 +8,6 @@ Ouonnki TV是一个轻量级、免费的在线视频搜索与观看平台，提�
 
 演示站：https://tv.ouonnki.site
 
-<img src="https://testingcf.jsdelivr.net/gh/bestZwei/imgs@master/picgo/image-20250406231222216.png" alt="image-20250406231222216" style="zoom:67%;" />
-
 **感谢 [NodeSupport](https://www.nodeseek.com/post-305185-1) 友情赞助**
 
 ## ✨ 主要特性
@@ -59,7 +57,7 @@ Ouonnki TV播放器支持以下键盘快捷键：
 
 ## 🚀 一键部署
 
-[![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https%3A%2F%2Fgithub.com%2FLibreSpark%2FLibreTV)
+[![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https://github.com/cansoking/OuonnkiTV)
 
 ## 🚀 部署指南
 
@@ -90,7 +88,7 @@ python -m http.server 8080
 npx http-server -p 8080
 ```
 
-### Docker 部署
+<!-- ### Docker 部署
 
 ```bash
 docker pull bestzwei/libretv:latest
@@ -111,7 +109,7 @@ services:
     container_name: libretv
     ports:
       - "8899:80"
-    restart: unless-stopped
+    restart: unless-stopped -->
 ```
 
 ## 🔧 自定义配置
@@ -126,17 +124,13 @@ services:
 
 注意：若使用docker部署，可进入容器，在`/usr/share/nginx/html/js`内修改相关配置
 
-## Star History
-
-[![Star History Chart](https://api.star-history.com/svg?repos=LibreSpark/LibreTV&type=Date)](https://www.star-history.com/#LibreSpark/LibreTV&Date)
-
 ## ⚠️ 免责声明
 
 Ouonnki TV 仅作为视频搜索工具，不存储、上传或分发任何视频内容。所有视频均来自第三方API接口提供的搜索结果。如有侵权内容，请联系相应的内容提供方。
 
 ## 🔄 更新日志
 
-- 1.0.0 (2024-04-16): 初始版本发布
+<!-- - 1.0.0 (2024-04-16): 初始版本发布
 - 1.0.1 (2025-04-07): 添加广告过滤功能，优化播放器性能
 - 1.0.2 (2025-04-08): 分离了播放页面，优化视频源API兼容性
-- 1.0.3 (2025-04-13): 性能优化、ui优化、更新设置功能
+- 1.0.3 (2025-04-13): 性能优化、ui优化、更新设置功能 -->

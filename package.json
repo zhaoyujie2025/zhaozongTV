@@ -1,34 +1,37 @@
 {
-  "name": "ouonnki-tv",
-  "version": "1.0.0",
-  "description": "Ouonnki TV - 免费在线视频搜索与观看平台",
-  "main": "index.js",
+  "name": "ouonnkitv",
+  "private": true,
+  "version": "0.0.1",
+  "type": "module",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
-    "dev": "next dev",
-    "build": "next build",
-    "start": "next start",
-    "lint": "next lint"
+    "dev": "vite",
+    "build": "tsc -b && vite build",
+    "lint": "eslint .",
+    "preview": "vite preview"
   },
-  "keywords": [
-    "Ouonnki TV",
-    "免费在线视频",
-    "视频搜索",
-    "视频观看"
-  ],
-  "author": "Ouonnki",
-  "license": "ISC",
   "dependencies": {
-    "next": "^15.3.0",
+    "@heroui/react": "2.8.0-beta.7",
+    "@tailwindcss/vite": "^4.1.8",
+    "framer-motion": "^12.16.0",
     "react": "^19.1.0",
-    "react-dom": "^19.1.0"
+    "react-dom": "^19.1.0",
+    "react-router": "^7.6.2",
+    "tailwindcss": "^4.1.8",
+    "zustand": "^5.0.5"
   },
   "devDependencies": {
-    "@tailwindcss/postcss": "^4.1.4",
-    "@types/node": "22.14.1",
-    "@types/react": "19.1.2",
-    "postcss": "^8.5.3",
-    "tailwindcss": "^4.1.4",
-    "typescript": "5.8.3"
+    "@eslint/js": "^9.25.0",
+    "@types/react": "^19.1.2",
+    "@types/react-dom": "^19.1.2",
+    "@vitejs/plugin-react": "^4.4.1",
+    "eslint": "^9.25.0",
+    "eslint-plugin-react-hooks": "^5.2.0",
+    "eslint-plugin-react-refresh": "^0.4.19",
+    "globals": "^16.0.0",
+    "prettier": "^3.5.3",
+    "prettier-plugin-tailwindcss": "^0.6.12",
+    "typescript": "~5.8.3",
+    "typescript-eslint": "^8.30.1",
+    "vite": "^6.3.5"
   }
 }

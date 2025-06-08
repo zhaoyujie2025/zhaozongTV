@@ -2,45 +2,10 @@ import { AcmeLogo, SearchIcon } from '@/components/icons'
 import { Button, Input, Chip } from '@heroui/react'
 import { useState } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
+import { useSearchHistory } from '@/hooks/useHistory'
 
 function App() {
-  const [searchHistory, setSearchHistory] = useState<{ id: string; content: string }[]>([
-    {
-      id: '1',
-      content: '搜索历史1asdasasdsad',
-    },
-    {
-      id: '2',
-      content: '搜索',
-    },
-    {
-      id: '3',
-      content: '搜索历史3',
-    },
-
-    {
-      id: '4',
-      content: '搜索历史3',
-    },
-
-    {
-      id: '5',
-      content: '搜索历史5',
-    },
-
-    {
-      id: '6',
-      content: '搜索历史6',
-    },
-    {
-      id: '7',
-      content: '搜索历史7',
-    },
-    {
-      id: '8',
-      content: '搜索历史8',
-    },
-  ])
+  const { searchHistory, addSearchHistoryItem, removeSearchHistoryItem } = useSearchHistory()
   const [search, setSearch] = useState('')
   const [buttonTransitionStatus, setButtonTransitionStatus] = useState({
     opacity: 0,
@@ -49,6 +14,7 @@ function App() {
   const [buttonIsDisabled, setButtonIsDisabled] = useState(true)
   const [isInputFocused, setIsInputFocused] = useState(false)
   const [hoveredChipId, setHoveredChipId] = useState<string | null>(null)
+
   const onSearchChange = (value: string) => {
     setSearch(value)
     if (value.length > 0) {
@@ -65,6 +31,19 @@ function App() {
       })
     }
   }
+
+  const handleSearch = () => {
+    if (search.trim().length > 0) {
+      addSearchHistoryItem(search)
+    }
+  }
+
+  const handleKeyDown = (event: React.KeyboardEvent) => {
+    if (event.key === 'Enter') {
+      handleSearch()
+    }
+  }
+
   return (
     <>
       <div className="flex h-full w-full flex-col items-center justify-center">
@@ -106,6 +85,7 @@ function App() {
             radius="full"
             value={search}
             onValueChange={onSearchChange}
+            onKeyDown={handleKeyDown}
             onFocus={() => setIsInputFocused(true)}
             onBlur={() => setIsInputFocused(false)}
             endContent={
@@ -123,9 +103,7 @@ function App() {
                   className="bg-gradient-to-br from-gray-500 to-gray-950 font-bold text-white shadow-lg"
                   size="md"
                   radius="full"
-                  onPress={() => {
-                    console.log('search')
-                  }}
+                  onPress={handleSearch}
                   isDisabled={buttonIsDisabled}
                 >
                   搜索
@@ -166,7 +144,7 @@ function App() {
                     size="lg"
                     onClose={() => {
                       if (hoveredChipId === item.id) {
-                        setSearchHistory(searchHistory.filter(a => a.id !== item.id))
+                        removeSearchHistoryItem(item.id)
                       }
                     }}
                   >

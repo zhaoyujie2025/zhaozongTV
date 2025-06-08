@@ -1,5 +1,185 @@
+import { AcmeLogo, SearchIcon } from '@/components/icons'
+import { Button, Input, Chip } from '@heroui/react'
+import { useState } from 'react'
+import { motion, AnimatePresence } from 'framer-motion'
+
 function App() {
-  return <>Home</>
+  const [searchHistory, setSearchHistory] = useState<{ id: string; content: string }[]>([
+    {
+      id: '1',
+      content: '搜索历史1asdasasdsad',
+    },
+    {
+      id: '2',
+      content: '搜索',
+    },
+    {
+      id: '3',
+      content: '搜索历史3',
+    },
+
+    {
+      id: '4',
+      content: '搜索历史3',
+    },
+
+    {
+      id: '5',
+      content: '搜索历史5',
+    },
+
+    {
+      id: '6',
+      content: '搜索历史6',
+    },
+    {
+      id: '7',
+      content: '搜索历史7',
+    },
+    {
+      id: '8',
+      content: '搜索历史8',
+    },
+  ])
+  const [search, setSearch] = useState('')
+  const [buttonTransitionStatus, setButtonTransitionStatus] = useState({
+    opacity: 0,
+    filter: 'blur(5px)',
+  })
+  const [buttonIsDisabled, setButtonIsDisabled] = useState(true)
+  const [isInputFocused, setIsInputFocused] = useState(false)
+  const [hoveredChipId, setHoveredChipId] = useState<string | null>(null)
+  const onSearchChange = (value: string) => {
+    setSearch(value)
+    if (value.length > 0) {
+      setButtonTransitionStatus({
+        opacity: 1,
+        filter: 'blur(0px)',
+      })
+      setButtonIsDisabled(false)
+    } else {
+      setButtonIsDisabled(true)
+      setButtonTransitionStatus({
+        opacity: 0,
+        filter: 'blur(5px)',
+      })
+    }
+  }
+  return (
+    <>
+      <div className="flex h-full w-full flex-col items-center justify-center">
+        <motion.div
+          animate={{
+            filter: isInputFocused ? 'blur(6px)' : 'blur(0px)',
+          }}
+          transition={{ duration: 0.4 }}
+          className="mt-[6rem] flex translate-x-[-1rem] items-center gap-2 text-[2rem]"
+        >
+          <AcmeLogo size={64} />
+          <p className="font-bold text-inherit">OUONNKI TV</p>
+        </motion.div>
+        <motion.div
+          initial={{ width: '30rem' }}
+          whileHover={{
+            scale: isInputFocused ? 1.2 : 1.02,
+            width: '50rem',
+          }}
+          animate={{
+            scale: isInputFocused ? 1.2 : 1,
+            width: isInputFocused ? '50rem' : '30rem',
+            translateY: isInputFocused ? '-0.5rem' : '0rem',
+          }}
+          className="h-fit"
+        >
+          <Input
+            classNames={{
+              base: 'max-w-full h-13',
+              mainWrapper: 'h-full',
+              input: 'text-md',
+              inputWrapper: 'h-full font-normal text-default-500 pr-2 shadow-lg',
+            }}
+            placeholder="输入内容搜索..."
+            size="lg"
+            variant="bordered"
+            startContent={<SearchIcon size={18} />}
+            type="search"
+            radius="full"
+            value={search}
+            onValueChange={onSearchChange}
+            onFocus={() => setIsInputFocused(true)}
+            onBlur={() => setIsInputFocused(false)}
+            endContent={
+              <motion.div
+                initial={{ opacity: 0, filter: 'blur(5px)' }}
+                animate={{
+                  opacity: buttonTransitionStatus.opacity,
+                  filter: buttonTransitionStatus.filter,
+                }}
+                whileHover={{ scale: 1.02 }}
+                whileTap={{ scale: 0.95 }}
+                transition={{ duration: 0.2 }}
+              >
+                <Button
+                  className="bg-gradient-to-br from-gray-500 to-gray-950 font-bold text-white shadow-lg"
+                  size="md"
+                  radius="full"
+                  onPress={() => {
+                    console.log('search')
+                  }}
+                  isDisabled={buttonIsDisabled}
+                >
+                  搜索
+                </Button>
+              </motion.div>
+            }
+          />
+        </motion.div>
+        <motion.div
+          initial={{ filter: 'opacity(20%)' }}
+          animate={{
+            filter: isInputFocused ? 'blur(6px) opacity(20%)' : 'blur(0px) opacity(20%)',
+          }}
+          whileHover={{
+            filter: isInputFocused ? 'blur(6px) opacity(100%)' : 'blur(0px) opacity(100%)',
+          }}
+          transition={{ duration: 0.4 }}
+          className="mt-[3rem] flex w-[42rem] flex-row items-start gap-2"
+        >
+          <p className="text-lg font-bold">搜索历史：</p>
+          <div className="flex w-[34rem] flex-wrap gap-3">
+            <AnimatePresence mode="popLayout">
+              {searchHistory.map(item => (
+                <motion.div
+                  key={item.id}
+                  layout
+                  exit={{ opacity: 0, filter: 'blur(5px)' }}
+                  onMouseEnter={() => setHoveredChipId(item.id)}
+                  onMouseLeave={() => setHoveredChipId(null)}
+                >
+                  <Chip
+                    classNames={{
+                      base: 'border-2 border-gray-400 hover:border-black hover:scale-101 transition-all duration-300',
+                      content: `transition-all duration-200 ${hoveredChipId === item.id ? 'translate-x-0' : 'translate-x-2'}`,
+                      closeButton: `transition-opacity duration-200 ${hoveredChipId === item.id ? 'opacity-100' : 'opacity-0'}`,
+                    }}
+                    variant="bordered"
+                    size="lg"
+                    onClose={() => {
+                      if (hoveredChipId === item.id) {
+                        setSearchHistory(searchHistory.filter(a => a.id !== item.id))
+                      }
+                    }}
+                  >
+                    {item.content}
+                  </Chip>
+                </motion.div>
+              ))}
+            </AnimatePresence>
+          </div>
+        </motion.div>
+      </div>
+    </>
+  )
 }
 
 export default App

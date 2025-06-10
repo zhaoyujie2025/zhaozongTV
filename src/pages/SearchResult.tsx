@@ -4,11 +4,12 @@ import { useEffect } from 'react'
 
 export default function SearchResult() {
   const { query } = useParams()
-  const { search, setSearch } = useSearch()
+  const { search, setSearch, searchMovie } = useSearch()
   useEffect(() => {
     if (query && query !== search) {
       setSearch(query)
+      searchMovie(query)
     }
-  }, [query, setSearch, search])
-  return <div>SearchResult: {search}</div>
+  }, [query])
+  return <div>SearchResult: {query}</div>
 }

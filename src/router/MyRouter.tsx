@@ -1,18 +1,29 @@
-import { BrowserRouter, Routes, Route } from 'react-router'
+import { BrowserRouter, Routes, Route, useLocation } from 'react-router'
+import { AnimatePresence } from 'framer-motion'
 import Layout from '@/components/layouts/Layout'
 import SearchResult from '@/pages/SearchResult'
 import Videos from '@/pages/Videos'
 
-export default function MyRouter({ children }: { children: React.ReactNode }) {
+function AnimatedRoutes({ children }: { children: React.ReactNode }) {
+  const location = useLocation()
+
   return (
-    <BrowserRouter>
-      <Routes>
+    <AnimatePresence mode="wait">
+      <Routes location={location} key={location.pathname}>
         <Route path="/" element={children} />
         <Route element={<Layout />}>
           <Route path="search/:query" element={<SearchResult />} />
           <Route path="videos" element={<Videos />} />
         </Route>
       </Routes>
+    </AnimatePresence>
+  )
+}
+
+export default function MyRouter({ children }: { children: React.ReactNode }) {
+  return (
+    <BrowserRouter>
+      <AnimatedRoutes>{children}</AnimatedRoutes>
     </BrowserRouter>
   )
 }

@@ -1,12 +1,12 @@
 import { AcmeLogo, SearchIcon } from '@/components/icons'
 import { Button, Input, Chip } from '@heroui/react'
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { useSearchHistory, useSearch } from '@/hooks'
 
 function App() {
   const { searchHistory, removeSearchHistoryItem } = useSearchHistory()
-  const { search, setSearch, searchMovie, clearSearch } = useSearch()
+  const { search, setSearch, searchMovie } = useSearch()
   const [buttonTransitionStatus, setButtonTransitionStatus] = useState({
     opacity: 0,
     filter: 'blur(5px)',
@@ -15,9 +15,8 @@ function App() {
   const [isInputFocused, setIsInputFocused] = useState(false)
   const [hoveredChipId, setHoveredChipId] = useState<string | null>(null)
 
-  const onSearchChange = (value: string) => {
-    setSearch(value)
-    if (value.length > 0) {
+  useEffect(() => {
+    if (search.length > 0) {
       setButtonTransitionStatus({
         opacity: 1,
         filter: 'blur(0px)',
@@ -30,7 +29,7 @@ function App() {
         filter: 'blur(5px)',
       })
     }
-  }
+  }, [search])
 
   const handleSearch = () => {
     searchMovie(search)
@@ -43,19 +42,30 @@ function App() {
   }
 
   return (
-    <>
+    <motion.div
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      exit={{ opacity: 0 }}
+      transition={{ duration: 0.3 }}
+    >
       <div className="flex h-full w-full flex-col items-center justify-center">
         <motion.div
+          layoutId="app-logo"
           animate={{
             filter: isInputFocused ? 'blur(6px)' : 'blur(0px)',
           }}
           transition={{ duration: 0.4 }}
           className="mt-[10rem] flex translate-x-[-1rem] items-center gap-2 text-[2rem]"
         >
-          <AcmeLogo size={64} />
-          <p className="font-bold text-inherit">OUONNKI TV</p>
+          <motion.div layoutId="logo-icon">
+            <AcmeLogo size={64} />
+          </motion.div>
+          <motion.p layoutId="logo-text" className="font-bold text-inherit">
+            OUONNKI TV
+          </motion.p>
         </motion.div>
         <motion.div
+          layoutId="search-container"
           initial={{ width: '30rem' }}
           whileHover={{
             scale: isInputFocused ? 1.2 : 1.02,
@@ -78,13 +88,16 @@ function App() {
             placeholder="输入内容搜索..."
             size="lg"
             variant="bordered"
-            startContent={<SearchIcon size={18} />}
+            startContent={
+              <motion.div layoutId="search-icon">
+                <SearchIcon size={18} />
+              </motion.div>
+            }
             type="search"
             radius="full"
             value={search}
-            onValueChange={onSearchChange}
+            onValueChange={setSearch}
             onKeyDown={handleKeyDown}
-            onClear={clearSearch}
             onFocus={() => setIsInputFocused(true)}
             onBlur={() => setIsInputFocused(false)}
             endContent={
@@ -156,7 +169,7 @@ function App() {
           </div>
         </motion.div>
       </div>
-    </>
+    </motion.div>
   )
 }
 

@@ -2,11 +2,11 @@ import { AcmeLogo, SearchIcon } from '@/components/icons'
 import { Button, Input, Chip } from '@heroui/react'
 import { useState } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
-import { useSearchHistory } from '@/hooks/useHistory'
+import { useSearchHistory, useSearch } from '@/hooks'
 
 function App() {
-  const { searchHistory, addSearchHistoryItem, removeSearchHistoryItem } = useSearchHistory()
-  const [search, setSearch] = useState('')
+  const { searchHistory, removeSearchHistoryItem } = useSearchHistory()
+  const { search, setSearch, searchMovie, clearSearch } = useSearch()
   const [buttonTransitionStatus, setButtonTransitionStatus] = useState({
     opacity: 0,
     filter: 'blur(5px)',
@@ -33,9 +33,7 @@ function App() {
   }
 
   const handleSearch = () => {
-    if (search.trim().length > 0) {
-      addSearchHistoryItem(search)
-    }
+    searchMovie(search)
   }
 
   const handleKeyDown = (event: React.KeyboardEvent) => {
@@ -52,7 +50,7 @@ function App() {
             filter: isInputFocused ? 'blur(6px)' : 'blur(0px)',
           }}
           transition={{ duration: 0.4 }}
-          className="mt-[6rem] flex translate-x-[-1rem] items-center gap-2 text-[2rem]"
+          className="mt-[10rem] flex translate-x-[-1rem] items-center gap-2 text-[2rem]"
         >
           <AcmeLogo size={64} />
           <p className="font-bold text-inherit">OUONNKI TV</p>
@@ -86,6 +84,7 @@ function App() {
             value={search}
             onValueChange={onSearchChange}
             onKeyDown={handleKeyDown}
+            onClear={clearSearch}
             onFocus={() => setIsInputFocused(true)}
             onBlur={() => setIsInputFocused(false)}
             endContent={
@@ -136,12 +135,13 @@ function App() {
                 >
                   <Chip
                     classNames={{
-                      base: 'border-2 border-gray-400 hover:border-black hover:scale-101 transition-all duration-300',
+                      base: 'cursor-pointer border-2 border-gray-400 hover:border-black hover:scale-101 transition-all duration-300',
                       content: `transition-all duration-200 ${hoveredChipId === item.id ? 'translate-x-0' : 'translate-x-2'}`,
                       closeButton: `transition-opacity duration-200 ${hoveredChipId === item.id ? 'opacity-100' : 'opacity-0'}`,
                     }}
                     variant="bordered"
                     size="lg"
+                    onClick={() => searchMovie(item.content)}
                     onClose={() => {
                       if (hoveredChipId === item.id) {
                         removeSearchHistoryItem(item.id)

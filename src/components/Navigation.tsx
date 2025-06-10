@@ -1,14 +1,22 @@
 import { Navbar, NavbarBrand, NavbarContent, Input } from '@heroui/react'
 import { AcmeLogo, SearchIcon } from '@/components/icons'
-import { useState } from 'react'
+import { NavLink } from 'react-router'
+import { useSearch } from '@/hooks'
 
 export default function Navigation() {
-  const [search, setSearch] = useState('')
+  const { search, setSearch, searchMovie, clearSearch } = useSearch()
+  const handleKeyDown = (event: React.KeyboardEvent) => {
+    if (event.key === 'Enter') {
+      searchMovie(search)
+    }
+  }
   return (
     <Navbar>
       <NavbarBrand>
-        <AcmeLogo />
-        <p className="font-bold text-inherit">OUONNKI TV</p>
+        <NavLink to="/" className="flex items-center gap-2">
+          <AcmeLogo />
+          <p className="font-bold text-inherit">OUONNKI TV</p>
+        </NavLink>
       </NavbarBrand>
       <NavbarContent as="div" className="items-center" justify="end">
         <Input
@@ -27,6 +35,8 @@ export default function Navigation() {
           radius="full"
           value={search}
           onValueChange={setSearch}
+          onKeyDown={handleKeyDown}
+          onClear={clearSearch}
         />
       </NavbarContent>
     </Navbar>

@@ -1,15 +1,114 @@
-import { useParams } from 'react-router'
+import { useParams, useNavigate } from 'react-router'
 import { useSearch } from '@/hooks'
-import { useEffect } from 'react'
+import { apiService } from '@/services/api.service'
+import { useState, useEffect } from 'react'
+import { type VideoItem } from '@/types'
+import { useApiStore } from '@/store/apiStore'
+import { Card, CardFooter, Image, CardHeader, Chip } from '@heroui/react'
 
 export default function SearchResult() {
+  const { selectedAPIs } = useApiStore()
+  const navigate = useNavigate()
+
   const { query } = useParams()
   const { search, setSearch, searchMovie } = useSearch()
+  const [searchRes, setSearchRes] = useState<VideoItem[]>()
+  const [loading, setLoading] = useState(false)
+
+  // 调用搜索内容
+  const fetchSearchRes = async () => {
+    setLoading(true)
+    try {
+      const res = await apiService.aggregatedSearch(search, selectedAPIs, [])
+      console.log(res)
+      setSearchRes(res)
+    } finally {
+      setLoading(false)
+    }
+  }
+
   useEffect(() => {
     if (query && query !== search) {
       setSearch(query)
       searchMovie(query)
     }
   }, [query])
-  return <div>SearchResult: {query}</div>
+
+  useEffect(() => {
+    if (search) {
+      fetchSearchRes()
+    }
+  }, [search])
+
+  // 处理卡片点击
+  const handleCardClick = (item: VideoItem) => {
+    // 导航到视频详情页，传递必要的参数
+    navigate(`/videos/${item.source_code}/${item.vod_id}`, {
+      state: { videoItem: item },
+    })
+  }
+
+  return (
+    <div className="p-4">
+      {/* 搜索信息 */}
+      <div className="mb-4">
+        <h2 className="text-2xl font-bold">
+          搜索 "{search}" 的结果
+          {searchRes && ` (${searchRes.length}个)`}
+        </h2>
+        {loading && <p className="mt-2 text-gray-500">正在搜索中...</p>}
+      </div>
+
+      {/* 搜索结果网格 */}
+      <div className="grid grid-cols-2 gap-6 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6">
+        {searchRes?.map((item, index) => (
+          <Card
+            key={`${item.source_code}_${item.vod_id}_${index}`}
+            isPressable
+            isFooterBlurred
+            onPress={() => handleCardClick(item)}
+            className="w-full border-none transition-transform hover:scale-105"
+            radius="lg"
+          >
+            <CardHeader className="absolute top-1 z-10 flex-col items-start p-3">
+              <div className="rounded-large bg-black/20 px-2 py-1 backdrop-blur">
+                <p className="text-tiny font-bold text-white/80 uppercase">{item.source_name}</p>
+              </div>
+              {item.vod_remarks && (
+                <Chip
+                  size="sm"
+                  color="warning"
+                  variant="flat"
+                  className="bg-warning/80 mt-2 backdrop-blur"
+                >
+                  {item.vod_remarks}
+                </Chip>
+              )}
+            </CardHeader>
+            <Image
+              removeWrapper
+              alt={item.vod_name}
+              className="z-0 h-[320px] w-full object-cover"
+              src={item.vod_pic || 'https://via.placeholder.com/300x450?text=暂无封面'}
+            />
+            <CardFooter className="rounded-large shadow-small absolute bottom-1 z-10 ml-1 w-[calc(100%_-_8px)] justify-between overflow-hidden border-1 border-white/20 py-2 backdrop-blur before:rounded-xl before:bg-white/10">
+              <div className="flex flex-grow flex-col gap-1 px-1">
+                <p className="text-tiny text-white/80">
+                  {item.type_name} · {item.vod_year}
+                </p>
+                <p className="line-clamp-2 text-sm font-semibold text-white">{item.vod_name}</p>
+              </div>
+            </CardFooter>
+          </Card>
+        ))}
+      </div>
+
+      {/* 无结果提示 */}
+      {!loading && searchRes?.length === 0 && (
+        <div className="py-20 text-center">
+          <p className="text-gray-500">没有找到相关内容</p>
+        </div>
+      )}
+    </div>
+  )
 }

@@ -133,14 +133,6 @@ export const SEARCH_HISTORY_KEY = 'videoSearchHistory'
 export const MAX_HISTORY_ITEMS = 5
 export const M3U8_PATTERN = /\$https?:\/\/[^"'\s]+?\.m3u8/g
 
-export const SITE_CONFIG = {
-  name: 'OuonnkiTV',
-  url: 'https://tv.ouonnki.site',
-  description: '免费在线视频搜索与观看平台',
-  logo: 'https://images.icon-icons.com/38/PNG/512/retrotv_5520.png',
-  version: '1.0.0',
-}
-
 export const PLAYER_CONFIG = {
   autoplay: true,
   allowFullscreen: true,

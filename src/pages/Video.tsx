@@ -1,0 +1,135 @@
+import { useEffect, useRef, useState } from 'react'
+import { useLocation, useNavigate } from 'react-router'
+import Player from 'xgplayer'
+import HlsPlugin from 'xgplayer-hls'
+import 'xgplayer/dist/index.min.css'
+import { Card, CardHeader, CardBody, Button, Chip } from '@heroui/react'
+import type { DetailResponse, VideoItem } from '@/types'
+
+export default function Video() {
+  const location = useLocation()
+  const navigate = useNavigate()
+  const playerRef = useRef<Player | null>(null)
+  const containerRef = useRef<HTMLDivElement>(null)
+
+  // 从路由状态获取数据
+  const detail = location.state?.detail as DetailResponse | undefined
+  const videoItem = location.state?.videoItem as VideoItem | undefined
+  const currentEpisodeIndex = location.state?.episodeIndex as number | undefined
+
+  const [selectedEpisode, setSelectedEpisode] = useState(currentEpisodeIndex || 0)
+
+  // 获取显示信息
+  const getTitle = () => videoItem?.vod_name || detail?.videoInfo?.title || '未知视频'
+  const sourceName = videoItem?.source_name || detail?.videoInfo?.source_name || '未知来源'
+
+  useEffect(() => {
+    if (!detail?.episodes || !detail.episodes[selectedEpisode]) return
+
+    // 销毁旧的播放器实例
+    if (playerRef.current) {
+      playerRef.current.destroy()
+    }
+
+    // 创建新的播放器实例
+    playerRef.current = new Player({
+      id: 'player',
+      url: detail.episodes[selectedEpisode],
+      fluid: true,
+      playbackRate: [0.5, 0.75, 1, 1.25, 1.5, 2],
+      pip: true,
+      download: true,
+      lang: 'zh-cn',
+      plugins: [HlsPlugin],
+    })
+
+    // 清理函数
+    return () => {
+      if (playerRef.current) {
+        playerRef.current.destroy()
+        playerRef.current = null
+      }
+    }
+  }, [selectedEpisode, detail])
+
+  // 处理集数切换
+  const handleEpisodeChange = (index: number) => {
+    setSelectedEpisode(index)
+  }
+
+  // 如果没有数据，显示错误信息
+  if (!detail || !detail.episodes || detail.episodes.length === 0) {
+    return (
+      <div className="flex h-screen items-center justify-center">
+        <Card className="w-96">
+          <CardBody>
+            <p className="text-center text-gray-500">无法获取播放信息</p>
+            <Button className="mt-4" onPress={() => navigate(-1)} variant="flat">
+              返回
+            </Button>
+          </CardBody>
+        </Card>
+      </div>
+    )
+  }
+
+  return (
+    <div className="container mx-auto max-w-6xl p-4">
+      {/* 播放器卡片 */}
+      <Card className="mb-6 border-none" radius="lg">
+        <CardHeader className="absolute top-1 z-10 w-full p-3">
+          <div className="flex w-full flex-col gap-2 sm:flex-row sm:items-start sm:justify-between">
+            <div className="rounded-large bg-black/20 px-3 py-2 backdrop-blur">
+              <p className="text-tiny font-bold text-white/80 uppercase">{sourceName}</p>
+              <h4 className="text-lg font-medium text-white">{getTitle()}</h4>
+            </div>
+            <div className="rounded-large flex items-center gap-2 bg-black/20 px-3 py-2 backdrop-blur">
+              <Chip size="sm" variant="flat" className="bg-white/20 backdrop-blur">
+                第 {selectedEpisode + 1} 集
+              </Chip>
+              <p className="text-tiny text-white/80">共 {detail.episodes.length} 集</p>
+              <Button
+                size="sm"
+                className="text-tiny ml-2 bg-black/20 text-white"
+                radius="lg"
+                variant="flat"
+                onPress={() => navigate(-1)}
+              >
+                返回
+              </Button>
+            </div>
+          </div>
+        </CardHeader>
+        <CardBody className="p-0">
+          <div id="player" ref={containerRef} className="aspect-video w-full rounded-lg bg-black" />
+        </CardBody>
+      </Card>
+
+      {/* 选集列表 */}
+      <Card isBlurred className="bg-background/60 dark:bg-default-100/50 border-none" radius="lg">
+        <CardHeader>
+          <h3 className="text-xl font-bold">选集</h3>
+        </CardHeader>
+        <CardBody>
+          <div className="grid grid-cols-4 gap-2 sm:grid-cols-6 md:grid-cols-8 lg:grid-cols-10">
+            {detail.episodes.map((_, index) => (
+              <Button
+                key={index}
+                size="sm"
+                className={
+                  selectedEpisode === index
+                    ? 'bg-primary text-primary-foreground'
+                    : 'bg-default-100 hover:bg-default-200'
+                }
+                variant={selectedEpisode === index ? 'solid' : 'flat'}
+                onPress={() => handleEpisodeChange(index)}
+              >
+                第{index + 1}集
+              </Button>
+            ))}
+          </div>
+        </CardBody>
+      </Card>
+    </div>
+  )
+}

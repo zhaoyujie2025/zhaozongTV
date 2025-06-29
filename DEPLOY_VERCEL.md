@@ -20,9 +20,10 @@
    - **Root Directory**: ./
    - **Build Command**: `pnpm build` 或 `npm run build`
    - **Output Directory**: dist
-6. 环境变量（可选）：
-   - 如果需要使用自定义代理，可以设置 `VITE_PROXY_URL`
-   - 默认使用 `https://cors.zme.ink/` 作为 CORS 代理
+6. 添加环境变量：
+   - 变量名：`VITE_PROXY_URL`
+   - 值：`/api/proxy?url=`
+   - 说明：使用 Vercel 自带的 API 路由作为代理
 7. 点击 "Deploy"
 
 ### 方法二：使用 Vercel CLI
@@ -43,16 +44,17 @@ vercel --prod
 
 ## 环境变量配置
 
-默认情况下不需要配置环境变量。如果需要使用自定义 CORS 代理：
+在 Vercel Dashboard 中配置以下环境变量：
 
 | 变量名 | 值 | 说明 |
 |--------|-----|------|
-| VITE_PROXY_URL | (可选) | 自定义 CORS 代理地址，默认使用 cors.zme.ink |
+| VITE_PROXY_URL | /api/proxy?url= | 使用 Vercel API 路由作为代理，更稳定可靠 |
 
 ## 项目结构说明
 
+- `/api/proxy.ts` - Vercel API 路由，用于处理 CORS 代理请求
 - `vercel.json` - Vercel 配置文件，处理 SPA 路由重写
-- `src/config/api.config.ts` - API 配置，默认使用 cors.zme.ink 代理
+- `src/config/api.config.ts` - API 配置，支持环境变量配置代理
 
 ## 部署后验证
 
@@ -64,8 +66,9 @@ vercel --prod
 ## 常见问题
 
 ### 1. API 请求失败
-- 检查 cors.zme.ink 代理服务是否正常
-- 如有需要，可以通过环境变量 `VITE_PROXY_URL` 设置其他代理服务
+- 确保环境变量 `VITE_PROXY_URL` 设置为 `/api/proxy?url=`
+- 检查 Vercel Functions 日志，查看代理请求是否正常
+- 确保 API 路由 `/api/proxy` 正常部署
 
 ### 2. 路由刷新 404
 - 确保 `vercel.json` 文件存在并配置正确

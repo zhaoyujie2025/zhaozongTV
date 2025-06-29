@@ -40,12 +40,17 @@ interface ApiActions {
 
 type ApiStore = ApiState & ApiActions
 
+// 获取所有非成人源的 API key
+const getDefaultSelectedAPIs = () => {
+  return Object.keys(API_SITES).filter(key => !API_SITES[key].adult)
+}
+
 export const useApiStore = create<ApiStore>()(
   devtools(
     persist(
       immer<ApiStore>((set, get) => ({
         // 初始状态
-        selectedAPIs: ['heimuer'], // 默认选中黑木耳
+        selectedAPIs: getDefaultSelectedAPIs(), // 默认选中所有非成人源
         customAPIs: [],
         yellowFilterEnabled: true,
         adFilteringEnabled: true,
@@ -173,6 +178,22 @@ export const useApiStore = create<ApiStore>()(
       })),
       {
         name: 'ouonnki-tv-api-store', // 持久化存储的键名
+        version: 1, // 添加版本号
+        migrate: (persistedState: unknown, version: number) => {
+          const state = persistedState as Partial<ApiState>
+          if (version === 0) {
+            // 从版本 0 迁移到版本 1
+            // 如果只选中了 heimuer，则自动选中所有非成人源
+            if (
+              state.selectedAPIs &&
+              state.selectedAPIs.length === 1 &&
+              state.selectedAPIs[0] === 'heimuer'
+            ) {
+              state.selectedAPIs = getDefaultSelectedAPIs()
+            }
+          }
+          return state
+        },
       },
     ),
     {

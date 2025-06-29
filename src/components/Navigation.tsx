@@ -13,6 +13,7 @@ export default function Navigation() {
   }
   return (
     <motion.div
+      className="sticky top-0 z-50"
       initial={{ y: -100, opacity: 0 }}
       animate={{ y: 0, opacity: 1 }}
       transition={{

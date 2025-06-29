@@ -1,5 +1,5 @@
 import { Navbar, NavbarBrand, NavbarContent, Input } from '@heroui/react'
-import { AcmeLogo, SearchIcon } from '@/components/icons'
+import { OkiLogo, SearchIcon } from '@/components/icons'
 import { NavLink } from 'react-router'
 import { useSearch } from '@/hooks'
 import { motion } from 'framer-motion'
@@ -30,11 +30,11 @@ export default function Navigation() {
       <Navbar>
         <NavbarBrand>
           <NavLink to="/" className="flex items-center gap-2">
-            <motion.div layoutId="app-logo" className="flex items-center gap-2">
+            <motion.div layoutId="app-logo" className="flex items-end gap-2">
               <motion.div layoutId="logo-icon">
-                <AcmeLogo />
+                <OkiLogo />
               </motion.div>
-              <motion.p layoutId="logo-text" className="font-bold text-inherit">
+              <motion.p layoutId="logo-text" className="text-lg font-bold text-inherit">
                 OUONNKI TV
               </motion.p>
             </motion.div>

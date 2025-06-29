@@ -1,4 +1,4 @@
-import { AcmeLogo, SearchIcon } from '@/components/icons'
+import { OkiLogo, SearchIcon } from '@/components/icons'
 import { Button, Input, Chip } from '@heroui/react'
 import { useEffect, useState } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
@@ -55,14 +55,14 @@ function App() {
             filter: isInputFocused ? 'blur(6px)' : 'blur(0px)',
           }}
           transition={{ duration: 0.4 }}
-          className="mt-[7rem] flex translate-x-[-1rem] items-center gap-2 text-[1.5rem] md:mt-[10rem] md:text-[2rem]"
+          className="mt-[7rem] flex translate-x-[-1rem] items-end gap-2 text-[1.5rem] md:mt-[10rem] md:text-[2rem]"
         >
           <motion.div layoutId="logo-icon">
             <div className="block md:hidden">
-              <AcmeLogo size={48} />
+              <OkiLogo size={48} />
             </div>
             <div className="hidden md:block">
-              <AcmeLogo size={64} />
+              <OkiLogo size={64} />
             </div>
           </motion.div>
           <motion.p layoutId="logo-text" className="font-bold text-inherit">
@@ -81,7 +81,7 @@ function App() {
             width: isInputFocused ? 'min(50rem, 90vw)' : 'min(30rem, 90vw)',
             translateY: isInputFocused ? '-0.5rem' : '0rem',
           }}
-          className="h-fit px-4 md:px-0"
+          className="mt-[1rem] h-fit px-4 md:px-0"
         >
           <Input
             classNames={{

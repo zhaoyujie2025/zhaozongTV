@@ -3,14 +3,19 @@ import { AcmeLogo, SearchIcon } from '@/components/icons'
 import { NavLink } from 'react-router'
 import { useSearch } from '@/hooks'
 import { motion } from 'framer-motion'
+import { useEffect, useState } from 'react'
 
 export default function Navigation() {
-  const { search, setSearch, searchMovie, clearSearch } = useSearch()
+  const { search, searchMovie } = useSearch()
+  const [inputContent, setInputContent] = useState('')
   const handleKeyDown = (event: React.KeyboardEvent) => {
     if (event.key === 'Enter') {
-      searchMovie(search)
+      searchMovie(inputContent)
     }
   }
+  useEffect(() => {
+    setInputContent(search)
+  }, [search])
   return (
     <motion.div
       className="sticky top-0 z-50"
@@ -55,10 +60,12 @@ export default function Navigation() {
               }
               type="search"
               radius="full"
-              value={search}
-              onValueChange={setSearch}
+              value={inputContent}
+              onValueChange={setInputContent}
               onKeyDown={handleKeyDown}
-              onClear={clearSearch}
+              onClear={() => {
+                setInputContent('')
+              }}
             />
           </motion.div>
         </NavbarContent>

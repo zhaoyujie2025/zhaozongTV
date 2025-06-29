@@ -151,7 +151,7 @@ export default function Videos() {
           </CardHeader>
           <CardBody>
             <div className="grid grid-cols-3 gap-2 sm:grid-cols-4 md:grid-cols-6 lg:grid-cols-8">
-              {detail.episodes.map((episode, index) => (
+              {detail.episodes.map((_, index) => (
                 <Button
                   key={index}
                   size="sm"

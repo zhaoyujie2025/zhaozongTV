@@ -41,6 +41,8 @@ export default function Video() {
       download: true,
       lang: 'zh-cn',
       plugins: [HlsPlugin],
+      // 隐藏下载按钮
+      ignores: ['download'],
     })
 
     // 清理函数

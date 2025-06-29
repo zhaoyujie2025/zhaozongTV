@@ -40,17 +40,12 @@ interface ApiActions {
 
 type ApiStore = ApiState & ApiActions
 
-// 获取所有非成人源的 API key
-const getDefaultSelectedAPIs = () => {
-  return Object.keys(API_SITES).filter(key => !API_SITES[key].adult)
-}
-
 export const useApiStore = create<ApiStore>()(
   devtools(
     persist(
       immer<ApiStore>((set, get) => ({
         // 初始状态
-        selectedAPIs: getDefaultSelectedAPIs(), // 默认选中所有非成人源
+        selectedAPIs: ['heimuer'], // 默认选中黑木耳
         customAPIs: [],
         yellowFilterEnabled: true,
         adFilteringEnabled: true,
@@ -189,7 +184,8 @@ export const useApiStore = create<ApiStore>()(
               state.selectedAPIs.length === 1 &&
               state.selectedAPIs[0] === 'heimuer'
             ) {
-              state.selectedAPIs = getDefaultSelectedAPIs()
+              // 保持原来的逻辑，不自动迁移
+              // state.selectedAPIs = getDefaultSelectedAPIs()
             }
           }
           return state

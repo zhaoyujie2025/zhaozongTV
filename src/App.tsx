@@ -48,17 +48,22 @@ function App() {
       exit={{ opacity: 0 }}
       transition={{ duration: 0.3 }}
     >
-      <div className="flex h-full w-full flex-col items-center justify-center">
+      <div className="flex h-full min-h-screen w-full flex-col items-center justify-start md:min-h-0 md:justify-center">
         <motion.div
           layoutId="app-logo"
           animate={{
             filter: isInputFocused ? 'blur(6px)' : 'blur(0px)',
           }}
           transition={{ duration: 0.4 }}
-          className="mt-[10rem] flex translate-x-[-1rem] items-center gap-2 text-[2rem]"
+          className="mt-[7rem] flex translate-x-[-1rem] items-center gap-2 text-[1.5rem] md:mt-[10rem] md:text-[2rem]"
         >
           <motion.div layoutId="logo-icon">
-            <AcmeLogo size={64} />
+            <div className="block md:hidden">
+              <AcmeLogo size={48} />
+            </div>
+            <div className="hidden md:block">
+              <AcmeLogo size={64} />
+            </div>
           </motion.div>
           <motion.p layoutId="logo-text" className="font-bold text-inherit">
             OUONNKI TV
@@ -66,17 +71,17 @@ function App() {
         </motion.div>
         <motion.div
           layoutId="search-container"
-          initial={{ width: '30rem' }}
+          initial={{ width: 'min(30rem, 90vw)' }}
           whileHover={{
             scale: isInputFocused ? 1.2 : 1.02,
-            width: '50rem',
+            width: 'min(50rem, 90vw)',
           }}
           animate={{
             scale: isInputFocused ? 1.2 : 1,
-            width: isInputFocused ? '50rem' : '30rem',
+            width: isInputFocused ? 'min(50rem, 90vw)' : 'min(30rem, 90vw)',
             translateY: isInputFocused ? '-0.5rem' : '0rem',
           }}
-          className="h-fit"
+          className="h-fit px-4 md:px-0"
         >
           <Input
             classNames={{
@@ -133,10 +138,10 @@ function App() {
             filter: isInputFocused ? 'blur(6px) opacity(100%)' : 'blur(0px) opacity(100%)',
           }}
           transition={{ duration: 0.4 }}
-          className="mt-[3rem] flex w-[42rem] flex-row items-start gap-2"
+          className="mt-[3rem] flex w-full flex-col items-start gap-2 px-4 md:w-[42rem] md:flex-row md:px-0"
         >
           <p className="text-lg font-bold">搜索历史：</p>
-          <div className="flex w-[34rem] flex-wrap gap-3">
+          <div className="flex w-full flex-wrap gap-3 md:w-[34rem]">
             <AnimatePresence mode="popLayout">
               {searchHistory.map(item => (
                 <motion.div

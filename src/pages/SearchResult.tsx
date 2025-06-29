@@ -15,15 +15,6 @@ export default function SearchResult() {
   const [searchRes, setSearchRes] = useState<VideoItem[]>()
   const [loading, setLoading] = useState(false)
 
-  // TODO: 临时调试代码 - 选中所有源（不包括成人源）
-  useEffect(() => {
-    // 只在默认状态（只选中黑木耳）时才自动选中所有源
-    if (selectedAPIs.length === 1 && selectedAPIs[0] === 'heimuer') {
-      console.log('[DEBUG] 检测到默认配置，自动选中所有非成人源')
-      selectAllAPIs(true) // true 表示排除成人源
-    }
-  }, [selectedAPIs, selectAllAPIs])
-
   // 调用搜索内容
   const fetchSearchRes = async () => {
     setLoading(true)
@@ -44,6 +35,12 @@ export default function SearchResult() {
   }, [query])
 
   useEffect(() => {
+    // TODO: 临时调试代码 - 选中所有源（不包括成人源）
+    // 只在默认状态（只选中黑木耳）时才自动选中所有源
+    if (selectedAPIs.length === 1 && selectedAPIs[0] === 'heimuer') {
+      console.log('[DEBUG] 检测到默认配置，自动选中所有非成人源')
+      selectAllAPIs(true) // true 表示排除成人源
+    }
     if (search) {
       fetchSearchRes()
     }
@@ -65,13 +62,7 @@ export default function SearchResult() {
           搜索 "{search}" 的结果
           {searchRes && ` (${searchRes.length}个)`}
         </h2>
-        <p className="mt-1 text-sm text-gray-600">
-          正在从 {selectedAPIs.length} 个源搜索
-          {/* 调试信息 */}
-          {selectedAPIs.length > 1 && (
-            <span className="ml-2 text-xs text-green-600">[调试模式：已自动选中所有非成人源]</span>
-          )}
-        </p>
+        <p className="mt-1 text-sm text-gray-600">正在从 {selectedAPIs.length} 个源搜索</p>
         {loading && <p className="mt-2 text-gray-500">正在搜索中...</p>}
       </div>
 

@@ -62,7 +62,7 @@ export default function SearchResult() {
           搜索 "{search}" 的结果
           {searchRes && ` (${searchRes.length}个)`}
         </h2>
-        <p className="mt-1 text-sm text-gray-600">正在从 {selectedAPIs.length} 个源搜索</p>
+        <p className="mt-1 text-sm text-gray-600">搜索结果来自 {selectedAPIs.length} 个源</p>
         {loading && <p className="mt-2 text-gray-500">正在搜索中...</p>}
       </div>
 

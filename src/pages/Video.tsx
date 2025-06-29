@@ -60,11 +60,11 @@ export default function Video() {
   // 如果没有数据，显示错误信息
   if (!detail || !detail.episodes || detail.episodes.length === 0) {
     return (
-      <div className="flex h-screen items-center justify-center">
-        <Card className="w-96">
-          <CardBody>
-            <p className="text-center text-gray-500">无法获取播放信息</p>
-            <Button className="mt-4" onPress={() => navigate(-1)} variant="flat">
+      <div className="flex min-h-screen items-center justify-center p-4">
+        <Card className="w-full max-w-sm">
+          <CardBody className="text-center">
+            <p className="mb-4 text-gray-500">无法获取播放信息</p>
+            <Button className="w-full" onPress={() => navigate(-1)} variant="flat">
               返回
             </Button>
           </CardBody>
@@ -74,11 +74,30 @@ export default function Video() {
   }
 
   return (
-    <div className="container mx-auto max-w-6xl p-4">
+    <div className="container mx-auto max-w-6xl p-2 sm:p-4">
+      {/* 视频信息 - 移动端在播放器上方，桌面端浮层 */}
+      <div className="mb-4 flex flex-col gap-2 md:hidden">
+        <div className="flex items-center justify-between">
+          <div>
+            <p className="text-sm font-semibold text-gray-600">{sourceName}</p>
+            <h4 className="text-lg font-bold">{getTitle()}</h4>
+          </div>
+          <Button size="sm" variant="flat" onPress={() => navigate(-1)}>
+            返回
+          </Button>
+        </div>
+        <div className="flex items-center gap-2">
+          <Chip size="sm" color="primary" variant="flat">
+            第 {selectedEpisode + 1} 集
+          </Chip>
+          <p className="text-sm text-gray-600">共 {detail.episodes.length} 集</p>
+        </div>
+      </div>
+
       {/* 播放器卡片 */}
-      <Card className="mb-6 border-none" radius="lg">
-        <CardHeader className="absolute top-1 z-10 w-full p-3">
-          <div className="flex w-full flex-col gap-2 sm:flex-row sm:items-start sm:justify-between">
+      <Card className="mb-4 border-none sm:mb-6" radius="lg">
+        <CardHeader className="absolute top-1 z-10 hidden w-full p-3 md:block">
+          <div className="flex w-full items-start justify-between">
             <div className="rounded-large bg-black/20 px-3 py-2 backdrop-blur">
               <p className="text-tiny font-bold text-white/80 uppercase">{sourceName}</p>
               <h4 className="text-lg font-medium text-white">{getTitle()}</h4>
@@ -108,10 +127,10 @@ export default function Video() {
       {/* 选集列表 */}
       <Card isBlurred className="bg-background/60 dark:bg-default-100/50 border-none" radius="lg">
         <CardHeader>
-          <h3 className="text-xl font-bold">选集</h3>
+          <h3 className="text-lg font-bold md:text-xl">选集</h3>
         </CardHeader>
         <CardBody>
-          <div className="grid grid-cols-4 gap-2 sm:grid-cols-6 md:grid-cols-8 lg:grid-cols-10">
+          <div className="xs:grid-cols-4 grid grid-cols-3 gap-2 sm:grid-cols-6 md:grid-cols-8 lg:grid-cols-10">
             {detail.episodes.map((_, index) => (
               <Button
                 key={index}
@@ -124,7 +143,7 @@ export default function Video() {
                 variant={selectedEpisode === index ? 'solid' : 'flat'}
                 onPress={() => handleEpisodeChange(index)}
               >
-                第{index + 1}集
+                <span className="text-xs sm:text-sm">{index + 1}</span>
               </Button>
             ))}
           </div>

@@ -255,68 +255,32 @@ class ApiService {
     selectedAPIs: string[],
     customAPIs: CustomApi[],
   ): Promise<VideoItem[]> {
-    // 先测试所有 API 的可用性
-    const availabilityTests: Promise<{
-      apiId: string
-      available: boolean
-      customApi?: CustomApi
-    }>[] = []
+    // 检查是否有选中的 API
+    if (selectedAPIs.length === 0) {
+      console.warn('没有选中任何 API 源')
+      return []
+    }
 
-    // 测试内置 API
+    // 直接对所有选中的 API 进行搜索
+    const searchPromises: Promise<VideoItem[]>[] = []
+
     selectedAPIs.forEach(apiId => {
       if (apiId.startsWith('custom_')) {
         // 处理自定义 API
         const customIndex = parseInt(apiId.replace('custom_', ''))
         const customApi = customAPIs[customIndex]
         if (customApi) {
-          availabilityTests.push(
-            this.testSiteAvailability(customApi.url).then(available => ({
-              apiId,
-              available,
-              customApi,
-            })),
-          )
-        }
-      } else if (API_SITES[apiId]) {
-        // 内置 API
-        availabilityTests.push(
-          this.testSiteAvailability(API_SITES[apiId].api).then(available => ({
-            apiId,
-            available,
-          })),
-        )
-      }
-    })
-
-    // 并行测试所有 API 的可用性
-    const testResults = await Promise.all(availabilityTests)
-
-    // 过滤出可用的 API
-    const availableAPIs = testResults.filter(result => result.available)
-
-    if (availableAPIs.length === 0) {
-      console.warn('没有可用的 API 源')
-      return []
-    }
-
-    console.log(`可用的 API 源: ${availableAPIs.length}/${selectedAPIs.length}`)
-
-    // 只对可用的 API 进行搜索
-    const searchPromises: Promise<VideoItem[]>[] = []
-
-    availableAPIs.forEach(({ apiId, customApi }) => {
-      if (apiId.startsWith('custom_')) {
-        // 处理自定义API
-        if (customApi) {
           searchPromises.push(
             this.searchSingleSource(query, 'custom', customApi.url, customApi.name),
           )
         }
       } else if (API_SITES[apiId]) {
-        // 内置API
+        // 内置 API
         searchPromises.push(this.searchSingleSource(query, apiId))
       }
     })
+
+    console.log(`正在搜索 ${searchPromises.length} 个源`)
 
     try {
       const resultsArray = await Promise.all(searchPromises)
@@ -347,6 +311,7 @@ class ApiService {
         return (a.source_name || '').localeCompare(b.source_name || '')
       })
 
+      console.log(`搜索完成，共找到 ${uniqueResults.length} 个结果`)
       return uniqueResults
     } catch (error) {
       console.error('聚合搜索错误:', error)
@@ -376,28 +341,6 @@ class ApiService {
     } catch (error) {
       console.warn(`${source}源搜索失败:`, error)
       return []
-    }
-  }
-
-  // 测试站点可用性
-  async testSiteAvailability(apiUrl: string): Promise<boolean> {
-    try {
-      // 使用简单的测试查询和较短的超时时间（3秒）
-      const testUrl = `${apiUrl}${API_CONFIG.search.path}${encodeURIComponent('test')}`
-
-      const response = await this.fetchWithTimeout(
-        PROXY_URL + encodeURIComponent(testUrl),
-        {
-          headers: API_CONFIG.search.headers,
-        },
-        3000, // 3秒超时
-      )
-
-      // 只要返回 200 状态码就认为可用
-      return response.ok
-    } catch {
-      // 静默处理错误，返回 false
-      return false
     }
   }
 }

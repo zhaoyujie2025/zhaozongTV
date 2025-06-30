@@ -106,10 +106,7 @@ class ApiService {
       }
 
       // 特殊源处理
-      if (
-        (sourceCode === 'ffzy' || sourceCode === 'jisu' || sourceCode === 'huangcang') &&
-        API_SITES[sourceCode].detail
-      ) {
+      if (sourceCode === 'huangcang' && API_SITES[sourceCode].detail) {
         return await this.handleSpecialSourceDetail(id, sourceCode)
       }
 
@@ -138,7 +135,7 @@ class ApiService {
       if (videoDetail.vod_play_url) {
         const playSources = videoDetail.vod_play_url.split('$$$')
         if (playSources.length > 0) {
-          const mainSource = playSources[0]
+          const mainSource = playSources[playSources.length - 1]
           const episodeList = mainSource.split('#')
 
           episodes = episodeList
@@ -280,8 +277,6 @@ class ApiService {
       }
     })
 
-    console.log(`正在搜索 ${searchPromises.length} 个源`)
-
     try {
       const resultsArray = await Promise.all(searchPromises)
       let allResults: VideoItem[] = []
@@ -310,8 +305,6 @@ class ApiService {
         if (nameCompare !== 0) return nameCompare
         return (a.source_name || '').localeCompare(b.source_name || '')
       })
-
-      console.log(`搜索完成，共找到 ${uniqueResults.length} 个结果`)
       return uniqueResults
     } catch (error) {
       console.error('聚合搜索错误:', error)

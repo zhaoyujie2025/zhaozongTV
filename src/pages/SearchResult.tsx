@@ -20,7 +20,6 @@ export default function SearchResult() {
     setLoading(true)
     try {
       const res = await apiService.aggregatedSearch(search, selectedAPIs, [])
-      console.log(res)
       setSearchRes(res)
     } finally {
       setLoading(false)
@@ -49,7 +48,7 @@ export default function SearchResult() {
   // 处理卡片点击
   const handleCardClick = (item: VideoItem) => {
     // 导航到视频详情页，传递必要的参数
-    navigate(`/videos/${item.source_code}/${item.vod_id}`, {
+    navigate(`/detail/${item.source_code}/${item.vod_id}`, {
       state: { videoItem: item },
     })
   }
@@ -96,7 +95,9 @@ export default function SearchResult() {
               removeWrapper
               alt={item.vod_name}
               className="z-0 h-[320px] w-full object-cover"
-              src={item.vod_pic || 'https://via.placeholder.com/300x450?text=暂无封面'}
+              src={
+                item.vod_pic || 'https://placehold.jp/30/ffffff/000000/300x450.png?text=暂无封面'
+              }
             />
             <CardFooter className="rounded-large shadow-small absolute bottom-1 z-10 ml-1 w-[calc(100%_-_8px)] justify-between overflow-hidden border-1 border-white/20 py-2 backdrop-blur before:rounded-xl before:bg-white/10">
               <div className="flex flex-grow flex-col gap-1 px-1">

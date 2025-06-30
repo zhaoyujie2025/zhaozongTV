@@ -13,9 +13,9 @@ export const API_SITES: Record<string, ApiSite> = {
     detail: 'https://heimuer.tv',
   },
   ffzy: {
-    api: 'http://ffzy5.tv',
+    api: 'http://api.ffzyapi.com',
     name: '非凡影视',
-    detail: 'http://ffzy5.tv',
+    detail: 'http://api.ffzyapi.com',
   },
   tyyszy: {
     api: 'https://tyyszy.com',
@@ -38,18 +38,10 @@ export const API_SITES: Record<string, ApiSite> = {
     api: 'https://cjhwba.com',
     name: '新华为',
   },
-  hwba: {
-    api: 'https://cjwba.com',
-    name: '华为吧资源',
-  },
   jisu: {
     api: 'https://jszyapi.com',
     name: '极速资源',
     detail: 'https://jszyapi.com',
-  },
-  dbzy: {
-    api: 'https://dbzy.com',
-    name: '豆瓣资源',
   },
   bfzy: {
     api: 'https://bfzyapi.com',

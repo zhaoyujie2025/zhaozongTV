@@ -4,7 +4,7 @@ import { apiService } from '@/services/api.service'
 import { type DetailResponse, type VideoItem } from '@/types'
 import { Card, CardHeader, CardBody, Chip, Button, Spinner } from '@heroui/react'
 
-export default function Videos() {
+export default function Detail() {
   const { sourceCode, vodId } = useParams<{ sourceCode: string; vodId: string }>()
   const location = useLocation()
   const navigate = useNavigate()

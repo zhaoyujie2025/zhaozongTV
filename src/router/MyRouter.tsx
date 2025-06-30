@@ -2,7 +2,7 @@ import { BrowserRouter, Routes, Route, useLocation } from 'react-router'
 import { AnimatePresence } from 'framer-motion'
 import Layout from '@/components/layouts/Layout'
 import SearchResult from '@/pages/SearchResult'
-import Videos from '@/pages/Videos'
+import Detail from '@/pages/Detail'
 import Video from '@/pages/Video'
 
 function AnimatedRoutes({ children }: { children: React.ReactNode }) {
@@ -15,7 +15,7 @@ function AnimatedRoutes({ children }: { children: React.ReactNode }) {
         <Route element={<Layout />}>
           <Route path="search/:query" element={<SearchResult />} />
           <Route path="video" element={<Video />} />
-          <Route path="videos/:sourceCode/:vodId" element={<Videos />} />
+          <Route path="detail/:sourceCode/:vodId" element={<Detail />} />
         </Route>
       </Routes>
     </AnimatePresence>

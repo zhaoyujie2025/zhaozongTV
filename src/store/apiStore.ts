@@ -173,11 +173,12 @@ export const useApiStore = create<ApiStore>()(
       })),
       {
         name: 'ouonnki-tv-api-store', // 持久化存储的键名
-        version: 1, // 添加版本号
+        version: 2, // 更新版本号以触发迁移
         migrate: (persistedState: unknown, version: number) => {
           const state = persistedState as Partial<ApiState>
+
+          // 从版本 0 迁移到版本 1
           if (version === 0) {
-            // 从版本 0 迁移到版本 1
             // 如果只选中了 heimuer，则自动选中所有非成人源
             if (
               state.selectedAPIs &&
@@ -188,6 +189,38 @@ export const useApiStore = create<ApiStore>()(
               // state.selectedAPIs = getDefaultSelectedAPIs()
             }
           }
+
+          // 从版本 1 迁移到版本 2 - 清理已删除的源
+          if (version < 2) {
+            if (state.selectedAPIs) {
+              // 获取当前有效的源 ID
+              const validSourceIds = Object.keys(API_SITES)
+
+              // 过滤掉已删除的源（hwba, dbzy 等）
+              const cleanedSelectedAPIs = state.selectedAPIs.filter((apiId: string) => {
+                // 保留自定义源
+                if (apiId.startsWith('custom_')) {
+                  return true
+                }
+                // 只保留配置中存在的源
+                return validSourceIds.includes(apiId)
+              })
+
+              // 记录清理的源数量
+              const removedCount = state.selectedAPIs.length - cleanedSelectedAPIs.length
+              if (removedCount > 0) {
+                console.log(`已清理 ${removedCount} 个无效的 API 源`)
+              }
+
+              state.selectedAPIs = cleanedSelectedAPIs
+
+              // 如果清理后没有选中任何源，默认选中 heimuer
+              if (state.selectedAPIs.length === 0) {
+                state.selectedAPIs = ['heimuer']
+              }
+            }
+          }
+
           return state
         },
       },

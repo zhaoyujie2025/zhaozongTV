@@ -3,10 +3,13 @@ import { Button, Input, Chip } from '@heroui/react'
 import { useEffect, useState } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { useSearchHistory, useSearch } from '@/hooks'
+import { useVersionStore } from '@/store/versionStore'
+import UpdateModal from '@/components/UpdateModal'
 
 function App() {
   const { searchHistory, removeSearchHistoryItem } = useSearchHistory()
   const { search, setSearch, searchMovie } = useSearch()
+  const { hasNewVersion, setShowUpdateModal } = useVersionStore()
   const [buttonTransitionStatus, setButtonTransitionStatus] = useState({
     opacity: 0,
     filter: 'blur(5px)',
@@ -31,6 +34,13 @@ function App() {
     }
   }, [search])
 
+  // 检查版本更新
+  useEffect(() => {
+    if (hasNewVersion()) {
+      setShowUpdateModal(true)
+    }
+  }, [])
+
   const handleSearch = () => {
     searchMovie(search)
   }
@@ -48,6 +58,7 @@ function App() {
       exit={{ opacity: 0 }}
       transition={{ duration: 0.3 }}
     >
+      <UpdateModal />
       <div className="flex h-full min-h-screen w-full flex-col items-center justify-start md:min-h-0 md:justify-center">
         <motion.div
           layoutId="app-logo"

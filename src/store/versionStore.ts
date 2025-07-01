@@ -51,14 +51,25 @@ const formatDate = (dateStr: string) => {
 // 版本更新历史
 const VERSION_UPDATES: VersionUpdate[] = [
   {
+    version: '1.0.0',
+    title: '初始版本',
+    date: formatDate('2025-06-30'),
+    features: ['初始版本'],
+  },
+  {
     version: '1.1.0',
     title: '视频源优化更新',
-    date: formatDate('2025-01-07'),
+    date: formatDate('2025-07-01'),
     features: ['优化了视频播放源的选择逻辑', '改进了特殊源的处理逻辑，提高了视频加载成功率'],
     fixes: ['修复了某些视频源无法正常播放的问题', '优化了搜索结果的加载速度'],
     breaking: ['移除了部分不稳定的视频源（华为吧资源、豆瓣资源）'],
   },
-  // 可以在这里添加更多版本更新记录
+  {
+    version: '1.1.1',
+    title: '视频播放界面路由优化',
+    date: formatDate('2025-07-01'),
+    features: ['优化了视频播放界面路由，采用新的路由方式，支持视频播放界面分享'],
+  },
 ]
 
 // 获取最新版本号

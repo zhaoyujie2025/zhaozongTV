@@ -16,6 +16,8 @@
   "dependencies": {
     "@heroui/react": "2.8.0-beta.7",
     "@tailwindcss/vite": "^4.1.8",
+    "@vercel/analytics": "^1.5.0",
+    "@vercel/speed-insights": "^1.2.0",
     "framer-motion": "^12.16.0",
     "immer": "^10.1.1",
     "react": "^19.1.0",

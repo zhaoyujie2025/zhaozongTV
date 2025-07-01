@@ -1,5 +1,6 @@
 import { useNavigate } from 'react-router'
 import { useSearchStore } from '@/store/searchStore'
+import { trackEvent } from '@/config/analytics.config'
 
 export const useSearch = () => {
   const navigate = useNavigate()
@@ -20,6 +21,13 @@ export const useSearch = () => {
       setSearch(query)
       // 添加到搜索历史
       addSearchHistoryItem(query)
+
+      // 跟踪搜索事件
+      trackEvent('search', {
+        query: query,
+        timestamp: new Date().toISOString(),
+      })
+
       // 导航到搜索页面
       navigate(`/search/${query}`)
     }

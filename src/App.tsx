@@ -5,6 +5,8 @@ import { motion, AnimatePresence } from 'framer-motion'
 import { useSearchHistory, useSearch } from '@/hooks'
 import { useVersionStore } from '@/store/versionStore'
 import UpdateModal from '@/components/UpdateModal'
+import { Analytics } from '@vercel/analytics/react'
+import { SpeedInsights } from '@vercel/speed-insights/react'
 
 function App() {
   const { searchHistory, removeSearchHistoryItem } = useSearchHistory()
@@ -185,6 +187,8 @@ function App() {
           </div>
         </motion.div>
       </div>
+      <Analytics />
+      <SpeedInsights />
     </motion.div>
   )
 }

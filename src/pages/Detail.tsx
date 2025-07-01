@@ -36,8 +36,8 @@ export default function Detail() {
   // 处理播放按钮点击
   const handlePlayEpisode = (index: number) => {
     setSelectedEpisode(index)
-    // 跳转到播放页面
-    navigate('/video', {
+    // 跳转到播放页面，使用新的路由格式
+    navigate(`/video/${sourceCode}/${vodId}/${index}`, {
       state: {
         detail,
         videoItem,

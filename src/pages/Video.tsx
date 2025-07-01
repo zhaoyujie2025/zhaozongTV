@@ -1,27 +1,118 @@
 import { useEffect, useRef, useState } from 'react'
-import { useLocation, useNavigate } from 'react-router'
+import { useLocation, useNavigate, useParams } from 'react-router'
 import Player from 'xgplayer'
 import HlsPlugin from 'xgplayer-hls'
 import 'xgplayer/dist/index.min.css'
-import { Card, CardHeader, CardBody, Button, Chip } from '@heroui/react'
+import { Card, CardHeader, CardBody, Button, Chip, Spinner } from '@heroui/react'
 import type { DetailResponse, VideoItem } from '@/types'
+import { apiService } from '@/services/api.service'
+import { useApiStore } from '@/store/apiStore'
+import { useViewingHistoryStore } from '@/store/viewingHistoryStore'
 
 export default function Video() {
   const location = useLocation()
   const navigate = useNavigate()
+  const { sourceCode, vodId, episodeIndex } = useParams<{
+    sourceCode: string
+    vodId: string
+    episodeIndex: string
+  }>()
+
   const playerRef = useRef<Player | null>(null)
   const containerRef = useRef<HTMLDivElement>(null)
 
-  // 从路由状态获取数据
-  const detail = location.state?.detail as DetailResponse | undefined
-  const videoItem = location.state?.videoItem as VideoItem | undefined
-  const currentEpisodeIndex = location.state?.episodeIndex as number | undefined
+  // 从 store 获取自定义 API 配置
+  const { customAPIs } = useApiStore()
+  const { addViewingHistory } = useViewingHistoryStore()
 
-  const [selectedEpisode, setSelectedEpisode] = useState(currentEpisodeIndex || 0)
+  // 状态管理
+  const [detail, setDetail] = useState<DetailResponse | null>(location.state?.detail || null)
+  const [videoItem, setVideoItem] = useState<VideoItem | undefined>(location.state?.videoItem)
+  const [selectedEpisode, setSelectedEpisode] = useState(() => {
+    const index = parseInt(episodeIndex || '0')
+    return isNaN(index) ? 0 : index
+  })
+  const [loading, setLoading] = useState(!location.state?.detail)
+  const [error, setError] = useState<string | null>(null)
 
   // 获取显示信息
   const getTitle = () => videoItem?.vod_name || detail?.videoInfo?.title || '未知视频'
   const sourceName = videoItem?.source_name || detail?.videoInfo?.source_name || '未知来源'
+
+  // 获取视频详情
+  useEffect(() => {
+    const fetchVideoDetail = async () => {
+      if (!sourceCode || !vodId) {
+        setError('缺少必要的参数')
+        return
+      }
+
+      // 如果已有数据，不需要重新获取
+      if (detail && detail.episodes && detail.episodes.length > 0) {
+        return
+      }
+
+      setLoading(true)
+      setError(null)
+
+      try {
+        let customApi: string | undefined
+
+        // 处理自定义 API 源
+        if (sourceCode?.startsWith('custom_')) {
+          const customIndex = parseInt(sourceCode.replace('custom_', ''))
+          const customApiConfig = customAPIs[customIndex]
+          if (customApiConfig) {
+            customApi = customApiConfig.url
+          } else {
+            throw new Error('找不到对应的自定义 API 配置')
+          }
+        }
+
+        // 获取视频详情
+        const response = await apiService.getVideoDetail(vodId, sourceCode, customApi)
+
+        if (response.code === 200 && response.episodes && response.episodes.length > 0) {
+          setDetail(response)
+          // 如果没有 videoItem，使用 response 中的信息
+          if (!videoItem && response.videoInfo) {
+            setVideoItem({
+              vod_id: vodId,
+              vod_name: response.videoInfo.title,
+              vod_pic: response.videoInfo.cover,
+              vod_remarks: response.videoInfo.remarks,
+              type_name: response.videoInfo.type,
+              vod_year: response.videoInfo.year,
+              vod_area: response.videoInfo.area,
+              vod_director: response.videoInfo.director,
+              vod_actor: response.videoInfo.actor,
+              vod_content: response.videoInfo.desc,
+              source_name: response.videoInfo.source_name,
+              source_code: response.videoInfo.source_code,
+              api_url: customApi,
+            })
+          }
+        } else {
+          throw new Error(response.msg || '获取视频详情失败')
+        }
+      } catch (err) {
+        console.error('获取视频详情失败:', err)
+        setError(err instanceof Error ? err.message : '获取视频详情失败')
+      } finally {
+        setLoading(false)
+      }
+    }
+
+    fetchVideoDetail()
+  }, [sourceCode, vodId, detail, videoItem, customAPIs])
+
+  // 监听 selectedEpisode 和 URL 参数变化
+  useEffect(() => {
+    const urlEpisodeIndex = parseInt(episodeIndex || '0')
+    if (!isNaN(urlEpisodeIndex) && urlEpisodeIndex !== selectedEpisode) {
+      setSelectedEpisode(urlEpisodeIndex)
+    }
+  }, [episodeIndex])
 
   useEffect(() => {
     if (!detail?.episodes || !detail.episodes[selectedEpisode]) return
@@ -45,6 +136,16 @@ export default function Video() {
       ignores: ['download'],
     })
 
+    // 记录观看历史
+    const currentUrl = `/video/${sourceCode}/${vodId}/${selectedEpisode}`
+    addViewingHistory({
+      title: getTitle(),
+      url: currentUrl,
+      episodeIndex: selectedEpisode,
+      sourceName: sourceName,
+      timestamp: Date.now(),
+    })
+
     // 清理函数
     return () => {
       if (playerRef.current) {
@@ -52,11 +153,44 @@ export default function Video() {
         playerRef.current = null
       }
     }
-  }, [selectedEpisode, detail])
+  }, [selectedEpisode, detail, sourceCode, vodId, addViewingHistory])
 
   // 处理集数切换
   const handleEpisodeChange = (index: number) => {
     setSelectedEpisode(index)
+    // 更新 URL，保持路由同步
+    navigate(`/video/${sourceCode}/${vodId}/${index}`, {
+      replace: true,
+      state: { detail, videoItem },
+    })
+  }
+
+  // 加载状态
+  if (loading) {
+    return (
+      <div className="flex min-h-screen items-center justify-center p-4">
+        <div className="text-center">
+          <Spinner size="lg" />
+          <p className="mt-4 text-gray-500">正在加载视频信息...</p>
+        </div>
+      </div>
+    )
+  }
+
+  // 错误状态
+  if (error) {
+    return (
+      <div className="flex min-h-screen items-center justify-center p-4">
+        <Card className="w-full max-w-sm">
+          <CardBody className="text-center">
+            <p className="mb-4 text-red-500">{error}</p>
+            <Button className="w-full" onPress={() => navigate(-1)} variant="flat">
+              返回
+            </Button>
+          </CardBody>
+        </Card>
+      </div>
+    )
   }
 
   // 如果没有数据，显示错误信息

@@ -14,7 +14,7 @@ function AnimatedRoutes({ children }: { children: React.ReactNode }) {
         <Route path="/" element={children} />
         <Route element={<Layout />}>
           <Route path="search/:query" element={<SearchResult />} />
-          <Route path="video" element={<Video />} />
+          <Route path="video/:sourceCode/:vodId/:episodeIndex" element={<Video />} />
           <Route path="detail/:sourceCode/:vodId" element={<Detail />} />
         </Route>
       </Routes>

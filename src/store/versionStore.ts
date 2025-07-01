@@ -51,10 +51,11 @@ const formatDate = (dateStr: string) => {
 // 版本更新历史
 const VERSION_UPDATES: VersionUpdate[] = [
   {
-    version: '1.0.0',
-    title: '初始版本',
-    date: formatDate('2025-06-30'),
-    features: ['初始版本'],
+    version: '1.1.1',
+    title: '视频播放界面路由优化',
+    date: formatDate('2025-07-01'),
+    features: ['优化了视频播放界面路由，采用新的路由方式，支持视频播放界面分享'],
+    fixes: ['修复更新显示的本地存储问题'],
   },
   {
     version: '1.1.0',
@@ -65,10 +66,10 @@ const VERSION_UPDATES: VersionUpdate[] = [
     breaking: ['移除了部分不稳定的视频源（华为吧资源、豆瓣资源）'],
   },
   {
-    version: '1.1.1',
-    title: '视频播放界面路由优化',
-    date: formatDate('2025-07-01'),
-    features: ['优化了视频播放界面路由，采用新的路由方式，支持视频播放界面分享'],
+    version: '1.0.0',
+    title: '初始版本',
+    date: formatDate('2025-06-30'),
+    features: ['初始版本'],
   },
 ]
 
@@ -118,6 +119,11 @@ export const useVersionStore = create<VersionStore>()(
       })),
       {
         name: 'ouonnki-tv-version-store',
+        version: 1,
+        partialize: state => ({
+          lastViewedVersion: state.lastViewedVersion,
+          updateHistory: state.updateHistory,
+        }),
       },
     ),
     {

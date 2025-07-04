@@ -51,12 +51,12 @@ export interface DetailResponse {
 // 观看历史项
 export interface ViewingHistoryItem {
   title: string
-  url: string
-  episodeIndex?: number
-  sourceName?: string
+  episodeIndex: number
+  sourceCode: string
+  vodId: string
   timestamp: number
-  playbackPosition?: number
-  duration?: number
+  playbackPosition: number
+  duration: number
 }
 
 // 自定义 API

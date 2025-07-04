@@ -12,11 +12,11 @@ interface ViewingHistoryActions {
   // 添加观看历史
   addViewingHistory: (item: ViewingHistoryItem) => void
   // 删除观看历史项
-  removeViewingHistory: (url: string) => void
+  removeViewingHistory: (item: ViewingHistoryItem) => void
   // 清空观看历史
   clearViewingHistory: () => void
   // 更新播放进度
-  updatePlaybackProgress: (url: string, playbackPosition: number, duration: number) => void
+  updatePlaybackProgress: (item: ViewingHistoryItem) => void
 }
 
 type ViewingHistoryStore = ViewingHistoryState & ViewingHistoryActions
@@ -31,9 +31,10 @@ export const useViewingHistoryStore = create<ViewingHistoryStore>()(
         // Actions
         addViewingHistory: (item: ViewingHistoryItem) => {
           set(state => {
-            // 检查是否已经存在相同标题的记录
+            // 检查是否已经存在相同视频的记录
             const existingIndex = state.viewingHistory.findIndex(
-              historyItem => historyItem.title === item.title,
+              historyItem =>
+                historyItem.sourceCode === item.sourceCode && historyItem.vodId === item.vodId,
             )
 
             if (existingIndex !== -1) {
@@ -41,21 +42,8 @@ export const useViewingHistoryStore = create<ViewingHistoryStore>()(
               const existingItem = state.viewingHistory[existingIndex]
               existingItem.episodeIndex = item.episodeIndex
               existingItem.timestamp = Date.now()
-
-              // 更新来源信息
-              if (item.sourceName && !existingItem.sourceName) {
-                existingItem.sourceName = item.sourceName
-              }
-
-              // 更新播放进度
-              if (item.playbackPosition && item.playbackPosition > 10) {
-                existingItem.playbackPosition = item.playbackPosition
-                existingItem.duration = item.duration || existingItem.duration
-              }
-
-              // 更新URL
-              existingItem.url = item.url
-
+              existingItem.playbackPosition = item.playbackPosition
+              existingItem.duration = item.duration
               // 移到最前面
               state.viewingHistory.splice(existingIndex, 1)
               state.viewingHistory.unshift(existingItem)
@@ -74,9 +62,12 @@ export const useViewingHistoryStore = create<ViewingHistoryStore>()(
           })
         },
 
-        removeViewingHistory: (url: string) => {
+        removeViewingHistory: (item: ViewingHistoryItem) => {
           set(state => {
-            state.viewingHistory = state.viewingHistory.filter(item => item.url !== url)
+            state.viewingHistory = state.viewingHistory.filter(
+              historyItem =>
+                historyItem.sourceCode !== item.sourceCode || historyItem.vodId !== item.vodId,
+            )
           })
         },
 
@@ -86,13 +77,16 @@ export const useViewingHistoryStore = create<ViewingHistoryStore>()(
           })
         },
 
-        updatePlaybackProgress: (url: string, playbackPosition: number, duration: number) => {
+        updatePlaybackProgress: (item: ViewingHistoryItem) => {
           set(state => {
-            const item = state.viewingHistory.find(historyItem => historyItem.url === url)
-            if (item && playbackPosition > 10) {
-              item.playbackPosition = playbackPosition
-              item.duration = duration
-              item.timestamp = Date.now()
+            const historyItem = state.viewingHistory.find(
+              historyItem =>
+                historyItem.sourceCode === item.sourceCode && historyItem.vodId === item.vodId,
+            )
+            if (historyItem) {
+              historyItem.playbackPosition = item.playbackPosition
+              historyItem.duration = item.duration
+              historyItem.timestamp = Date.now()
             }
           })
         },

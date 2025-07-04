@@ -24,7 +24,7 @@ export default function Video() {
 
   // 从 store 获取自定义 API 配置
   const { customAPIs } = useApiStore()
-  const { addViewingHistory } = useViewingHistoryStore()
+  const { addViewingHistory, viewingHistory } = useViewingHistoryStore()
 
   // 状态管理
   const [detail, setDetail] = useState<DetailResponse | null>(location.state?.detail || null)
@@ -134,6 +134,17 @@ export default function Video() {
       plugins: [HlsPlugin],
       ignores: ['download'],
     })
+
+    // 自动续播
+    const existingHistory = viewingHistory.find(
+      item =>
+        item.sourceCode === sourceCode &&
+        item.vodId === vodId &&
+        item.episodeIndex === selectedEpisode,
+    )
+    if (existingHistory) {
+      playerRef.current.currentTime = existingHistory.playbackPosition || 0
+    }
 
     // 记录观看历史
     const player = playerRef.current

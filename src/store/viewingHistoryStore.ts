@@ -15,8 +15,6 @@ interface ViewingHistoryActions {
   removeViewingHistory: (item: ViewingHistoryItem) => void
   // 清空观看历史
   clearViewingHistory: () => void
-  // 更新播放进度
-  updatePlaybackProgress: (item: ViewingHistoryItem) => void
 }
 
 type ViewingHistoryStore = ViewingHistoryState & ViewingHistoryActions
@@ -76,23 +74,18 @@ export const useViewingHistoryStore = create<ViewingHistoryStore>()(
             state.viewingHistory = []
           })
         },
-
-        updatePlaybackProgress: (item: ViewingHistoryItem) => {
-          set(state => {
-            const historyItem = state.viewingHistory.find(
-              historyItem =>
-                historyItem.sourceCode === item.sourceCode && historyItem.vodId === item.vodId,
-            )
-            if (historyItem) {
-              historyItem.playbackPosition = item.playbackPosition
-              historyItem.duration = item.duration
-              historyItem.timestamp = Date.now()
-            }
-          })
-        },
       })),
       {
         name: 'ouonnki-tv-viewing-history', // 持久化存储的键名
+        version: 1,
+        migrate: (persistedState: unknown, version: number) => {
+          if (version === 0) {
+            return {
+              viewingHistory: [], // 清空历史记录
+            }
+          }
+          return persistedState
+        },
       },
     ),
     {

@@ -8,6 +8,7 @@ import type { DetailResponse, VideoItem } from '@/types'
 import { apiService } from '@/services/api.service'
 import { useApiStore } from '@/store/apiStore'
 import { useViewingHistoryStore } from '@/store/viewingHistoryStore'
+import _ from 'lodash'
 
 export default function Video() {
   const location = useLocation()
@@ -127,28 +128,62 @@ export default function Video() {
       id: 'player',
       url: detail.episodes[selectedEpisode],
       fluid: true,
-      playbackRate: [0.5, 0.75, 1, 1.25, 1.5, 2],
+      playbackRate: [0.5, 0.75, 1, 1.25, 1.5, 2, 2.5, 3, 3.5, 4, 4.5, 5],
       pip: true,
-      download: true,
       lang: 'zh-cn',
       plugins: [HlsPlugin],
-      // 隐藏下载按钮
       ignores: ['download'],
     })
 
     // 记录观看历史
-    const currentUrl = `/video/${sourceCode}/${vodId}/${selectedEpisode}`
-    addViewingHistory({
-      title: getTitle(),
-      url: currentUrl,
-      episodeIndex: selectedEpisode,
-      sourceName: sourceName,
-      timestamp: Date.now(),
-    })
+    const player = playerRef.current
+    const normalAddHistory = () => {
+      if (!sourceCode || !vodId) return
+      addViewingHistory({
+        title: getTitle(),
+        sourceCode: sourceCode || '',
+        vodId: vodId || '',
+        episodeIndex: selectedEpisode,
+        playbackPosition: player.currentTime || 0,
+        duration: player.duration || 0,
+        timestamp: Date.now(),
+      })
+    }
+
+    player.on('play', normalAddHistory)
+    player.on('pause', normalAddHistory)
+    player.on('ended', normalAddHistory)
+
+    let lastTimeUpdate = 0
+    const TIME_UPDATE_INTERVAL = 3000
+
+    const timeUpdateHandler = () => {
+      if (!sourceCode || !vodId) return
+      const currentTime = player.currentTime || 0
+      const duration = player.duration || 0
+      const timeSinceLastUpdate = Date.now() - lastTimeUpdate
+
+      if (timeSinceLastUpdate >= TIME_UPDATE_INTERVAL && currentTime > 0 && duration > 0) {
+        lastTimeUpdate = Date.now()
+        addViewingHistory({
+          title: getTitle(),
+          sourceCode: sourceCode || '',
+          vodId: vodId || '',
+          episodeIndex: selectedEpisode,
+          playbackPosition: currentTime,
+          duration: duration,
+          timestamp: Date.now(),
+        })
+      }
+    }
+
+    player.on('timeupdate', _.throttle(timeUpdateHandler, TIME_UPDATE_INTERVAL))
 
     // 清理函数
     return () => {
       if (playerRef.current) {
+        normalAddHistory()
+        player.offAll()
         playerRef.current.destroy()
         playerRef.current = null
       }

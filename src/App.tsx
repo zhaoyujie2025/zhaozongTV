@@ -1,4 +1,4 @@
-import { OkiLogo, SearchIcon, SettingIcon } from '@/components/icons'
+import { OkiLogo, SearchIcon } from '@/components/icons'
 import { Button, Input, Chip } from '@heroui/react'
 import { useEffect, useState } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'

@@ -8,6 +8,7 @@ import UpdateModal from '@/components/UpdateModal'
 import { Analytics } from '@vercel/analytics/react'
 import { SpeedInsights } from '@vercel/speed-insights/react'
 import RecentHistory from '@/components/RecentHistory'
+import { isBrowser } from 'react-device-detect'
 
 function App() {
   const { searchHistory, removeSearchHistoryItem } = useSearchHistory()
@@ -62,7 +63,7 @@ function App() {
       transition={{ duration: 0.3 }}
     >
       <UpdateModal />
-      <motion.div layoutId="history-icon" className="absolute top-8 right-12 z-50 flex gap-4">
+      <motion.div layoutId="history-icon" className="absolute top-5 right-5 z-50 flex gap-4">
         <Button isIconOnly className="bg-white/20 shadow-lg shadow-gray-500/10 backdrop-blur-2xl">
           <RecentHistory />
         </Button>
@@ -152,15 +153,21 @@ function App() {
           />
         </motion.div>
         <motion.div
-          initial={{ filter: 'opacity(20%)' }}
+          initial={{ filter: isBrowser ? 'opacity(20%)' : 'opacity(100%)' }}
           animate={{
-            filter: isInputFocused ? 'blur(6px) opacity(20%)' : 'blur(0px) opacity(20%)',
+            filter: isInputFocused
+              ? isBrowser
+                ? 'blur(6px) opacity(20%)'
+                : 'blur(6px) opacity(100%)'
+              : isBrowser
+                ? 'blur(0px) opacity(20%)'
+                : 'blur(0px) opacity(100%)',
           }}
           whileHover={{
             filter: isInputFocused ? 'blur(6px) opacity(100%)' : 'blur(0px) opacity(100%)',
           }}
           transition={{ duration: 0.4 }}
-          className="mt-[3rem] flex w-full flex-col items-start gap-2 px-4 md:w-[42rem] md:flex-row md:px-0"
+          className="mt-[3rem] flex w-[88vw] flex-col items-start gap-2 px-4 md:w-[42rem] md:flex-row md:px-0"
         >
           <p className="text-lg font-bold">搜索历史：</p>
           <div className="flex w-full flex-wrap gap-3 md:w-[34rem]">

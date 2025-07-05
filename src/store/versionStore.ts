@@ -51,6 +51,17 @@ const formatDate = (dateStr: string) => {
 // 版本更新历史
 const VERSION_UPDATES: VersionUpdate[] = [
   {
+    version: '1.1.2',
+    title: '新增观看记录功能',
+    date: formatDate('2025-07-06'),
+    features: [
+      '新增了观看记录功能，支持查看最近观看的视频',
+      '自动记录播放进度，支持继续播放',
+      '支持查看观看记录',
+    ],
+    fixes: ['优化搜索历史移动端显示问题'],
+  },
+  {
     version: '1.1.1',
     title: '视频播放界面路由优化',
     date: formatDate('2025-07-01'),
@@ -122,7 +133,6 @@ export const useVersionStore = create<VersionStore>()(
         version: 1,
         partialize: state => ({
           lastViewedVersion: state.lastViewedVersion,
-          updateHistory: state.updateHistory,
         }),
       },
     ),

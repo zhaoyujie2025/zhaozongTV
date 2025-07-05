@@ -4,6 +4,7 @@ import { NavLink } from 'react-router'
 import { useSearch } from '@/hooks'
 import { motion } from 'framer-motion'
 import { useEffect, useState } from 'react'
+import RecentHistory from '@/components/RecentHistory'
 
 export default function Navigation() {
   const { search, searchMovie } = useSearch()
@@ -67,6 +68,12 @@ export default function Navigation() {
                 setInputContent('')
               }}
             />
+          </motion.div>
+          <motion.div
+            layoutId="history-icon"
+            className="flex items-center rounded-full p-2 transition-all duration-300 hover:cursor-pointer hover:bg-gray-200 active:bg-gray-200"
+          >
+            <RecentHistory />
           </motion.div>
         </NavbarContent>
       </Navbar>

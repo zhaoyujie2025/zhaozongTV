@@ -34,7 +34,7 @@ const HistoryList = () => {
       <ScrollShadow hideScrollBar className="h-full overflow-y-auto bg-transparent p-2">
         {filteredHistory.map((item, index) => (
           <Card
-            className="@container mb-[.6rem] h-[30vw] w-full bg-white/20 shadow-md/5 transition-all duration-500 hover:scale-101 hover:shadow-lg md:h-[8rem] md:w-[25rem]"
+            className="@container mb-[.6rem] h-[30vw] w-full bg-white/30 shadow-md/5 transition-all duration-500 hover:scale-101 hover:shadow-lg md:h-[8rem] md:w-[25rem]"
             key={index}
             isPressable
             shadow="sm"
@@ -117,7 +117,7 @@ export default function RecentHistory() {
         isOpen={isBrowser ? undefined : false}
         classNames={{
           base: 'bg-transparent h-[60vh]',
-          content: 'h-full p-2 bg-white/20 shadow-xl/30 shadow-gray-500/30 backdrop-blur-lg',
+          content: 'h-full p-2 bg-white/50 shadow-xl/30 shadow-gray-500/30 backdrop-blur-lg',
         }}
         content={
           <>
@@ -141,7 +141,7 @@ export default function RecentHistory() {
         createPortal(
           <div
             className={clsx(
-              'fixed inset-0 z-50 flex flex-col items-center justify-center bg-white/20 opacity-0 shadow-xl/30 shadow-gray-500/30 backdrop-blur-lg transition-opacity duration-2000',
+              'fixed inset-0 z-50 flex flex-col items-center justify-center bg-white/50 opacity-0 shadow-xl/30 shadow-gray-500/30 backdrop-blur-xl transition-opacity duration-2000',
               isOpen && 'opacity-100',
             )}
             onClick={() => setIsOpen(false)}

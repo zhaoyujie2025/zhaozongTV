@@ -62,14 +62,14 @@ function App() {
       transition={{ duration: 0.3 }}
     >
       <UpdateModal />
-      <div className="absolute top-8 right-12 z-50 flex gap-4">
+      <motion.div layoutId="history-icon" className="absolute top-8 right-12 z-50 flex gap-4">
         <Button isIconOnly className="bg-white/20 shadow-lg shadow-gray-500/10 backdrop-blur-2xl">
           <RecentHistory />
         </Button>
-        <Button isIconOnly className="bg-white/20 shadow-lg shadow-gray-500/10 backdrop-blur-2xl">
+        {/* <Button isIconOnly className="bg-white/20 shadow-lg shadow-gray-500/10 backdrop-blur-2xl">
           <SettingIcon size={25} />
-        </Button>
-      </div>
+        </Button> */}
+      </motion.div>
       <div className="flex h-full min-h-screen w-full flex-col items-center justify-start md:min-h-0 md:justify-center">
         <motion.div
           layoutId="app-logo"

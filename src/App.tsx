@@ -1,4 +1,4 @@
-import { OkiLogo, SearchIcon } from '@/components/icons'
+import { OkiLogo, SearchIcon, SettingIcon } from '@/components/icons'
 import { Button, Input, Chip } from '@heroui/react'
 import { useEffect, useState } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
@@ -7,6 +7,7 @@ import { useVersionStore } from '@/store/versionStore'
 import UpdateModal from '@/components/UpdateModal'
 import { Analytics } from '@vercel/analytics/react'
 import { SpeedInsights } from '@vercel/speed-insights/react'
+import RecentHistory from '@/components/RecentHistory'
 
 function App() {
   const { searchHistory, removeSearchHistoryItem } = useSearchHistory()
@@ -61,6 +62,14 @@ function App() {
       transition={{ duration: 0.3 }}
     >
       <UpdateModal />
+      <div className="absolute top-8 right-12 z-50 flex gap-4">
+        <Button isIconOnly className="bg-white/20 shadow-lg shadow-gray-500/10 backdrop-blur-2xl">
+          <RecentHistory />
+        </Button>
+        <Button isIconOnly className="bg-white/20 shadow-lg shadow-gray-500/10 backdrop-blur-2xl">
+          <SettingIcon size={25} />
+        </Button>
+      </div>
       <div className="flex h-full min-h-screen w-full flex-col items-center justify-start md:min-h-0 md:justify-center">
         <motion.div
           layoutId="app-logo"

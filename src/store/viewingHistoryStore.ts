@@ -32,16 +32,16 @@ export const useViewingHistoryStore = create<ViewingHistoryStore>()(
             // 检查是否已经存在相同视频的记录
             const existingIndex = state.viewingHistory.findIndex(
               historyItem =>
-                historyItem.sourceCode === item.sourceCode && historyItem.vodId === item.vodId,
+                historyItem.sourceCode === item.sourceCode &&
+                historyItem.vodId === item.vodId &&
+                historyItem.episodeIndex === item.episodeIndex,
             )
 
             if (existingIndex !== -1) {
               // 更新现有记录
               const existingItem = state.viewingHistory[existingIndex]
-              existingItem.episodeIndex = item.episodeIndex
               existingItem.timestamp = Date.now()
               existingItem.playbackPosition = item.playbackPosition
-              existingItem.duration = item.duration
               // 移到最前面
               state.viewingHistory.splice(existingIndex, 1)
               state.viewingHistory.unshift(existingItem)
@@ -77,9 +77,9 @@ export const useViewingHistoryStore = create<ViewingHistoryStore>()(
       })),
       {
         name: 'ouonnki-tv-viewing-history', // 持久化存储的键名
-        version: 1,
+        version: 2,
         migrate: (persistedState: unknown, version: number) => {
-          if (version === 0) {
+          if (version < 2) {
             return {
               viewingHistory: [], // 清空历史记录
             }

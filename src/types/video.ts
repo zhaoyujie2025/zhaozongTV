@@ -51,6 +51,7 @@ export interface DetailResponse {
 // 观看历史项
 export interface ViewingHistoryItem {
   title: string
+  imageUrl: string
   episodeIndex: number
   sourceCode: string
   vodId: string

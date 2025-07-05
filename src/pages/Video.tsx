@@ -152,6 +152,7 @@ export default function Video() {
       if (!sourceCode || !vodId) return
       addViewingHistory({
         title: getTitle(),
+        imageUrl: videoItem?.vod_pic || '',
         sourceCode: sourceCode || '',
         vodId: vodId || '',
         episodeIndex: selectedEpisode,
@@ -178,6 +179,7 @@ export default function Video() {
         lastTimeUpdate = Date.now()
         addViewingHistory({
           title: getTitle(),
+          imageUrl: videoItem?.vod_pic || '',
           sourceCode: sourceCode || '',
           vodId: vodId || '',
           episodeIndex: selectedEpisode,

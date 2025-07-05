@@ -8,7 +8,7 @@
     "node": ">=20.0.0"
   },
   "scripts": {
-    "dev": "vite",
+    "dev": "vite --host",
     "build": "tsc -b && vite build",
     "lint": "eslint .",
     "preview": "vite preview"
@@ -18,15 +18,21 @@
     "@tailwindcss/vite": "^4.1.8",
     "@vercel/analytics": "^1.5.0",
     "@vercel/speed-insights": "^1.2.0",
+    "clsx": "^2.1.1",
+    "dayjs": "^1.11.13",
+    "duration": "link:dayjs/plugin/duration",
     "framer-motion": "^12.16.0",
     "immer": "^10.1.1",
     "lodash": "^4.17.21",
     "react": "^19.1.0",
+    "react-device-detect": "^2.2.3",
     "react-dom": "^19.1.0",
     "react-router": "^7.6.2",
+    "relativeTime": "link:dayjs/plugin/relativeTime",
     "tailwindcss": "^4.1.8",
     "xgplayer": "^3.0.22",
     "xgplayer-hls": "^3.0.22",
+    "zh-cn": "link:dayjs/locale/zh-cn",
     "zustand": "^5.0.5"
   },
   "devDependencies": {

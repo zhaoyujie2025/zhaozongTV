@@ -1,7 +1,11 @@
 import logoSvg from '../../assets/logo.svg'
+import recentSvg from '../../assets/recently.svg'
+import settingSvg from '../../assets/setting.svg'
 
 export const OkiLogo = ({ size = 36, ...props }: { size?: number }) => {
-  return <img src={logoSvg} alt="Oki Logo" width={size} height={size} {...props} />
+  return (
+    <img draggable={false} src={logoSvg} alt="Oki Logo" width={size} height={size} {...props} />
+  )
 }
 
 export const SearchIcon = ({
@@ -42,5 +46,31 @@ export const SearchIcon = ({
         strokeWidth={strokeWidth}
       />
     </svg>
+  )
+}
+
+export const RecentIcon = ({ size = 36, ...props }: { size?: number }) => {
+  return (
+    <img
+      draggable={false}
+      src={recentSvg}
+      alt="Recent Icon"
+      width={size}
+      height={size}
+      {...props}
+    />
+  )
+}
+
+export const SettingIcon = ({ size = 36, ...props }: { size?: number }) => {
+  return (
+    <img
+      draggable={false}
+      src={settingSvg}
+      alt="Setting Icon"
+      width={size}
+      height={size}
+      {...props}
+    />
   )
 }

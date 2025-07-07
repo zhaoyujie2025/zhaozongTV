@@ -130,7 +130,7 @@ export default function RecentHistory() {
         }
         shadow="lg"
         placement="bottom"
-        offset={10}
+        offset={30}
       >
         <div
           onClick={isBrowser ? undefined : () => setIsOpen(!isOpen)}

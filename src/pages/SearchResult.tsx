@@ -7,20 +7,35 @@ import { useApiStore } from '@/store/apiStore'
 import { Card, CardFooter, Image, CardHeader, Chip } from '@heroui/react'
 
 export default function SearchResult() {
-  const { selectedAPIs, selectAllAPIs } = useApiStore()
+  const { selectedAPIs, selectAllAPIs, customAPIs } = useApiStore()
   const navigate = useNavigate()
 
   const { query } = useParams()
   const { search, setSearch, searchMovie } = useSearch()
-  const [searchRes, setSearchRes] = useState<VideoItem[]>()
+  const [searchRes, setSearchRes] = useState<VideoItem[]>([])
   const [loading, setLoading] = useState(false)
 
   // 调用搜索内容
   const fetchSearchRes = async () => {
+    if (!search) return
     setLoading(true)
+    setSearchRes([]) // 开始新搜索前清空旧结果
     try {
-      const res = await apiService.aggregatedSearch(search, selectedAPIs, [])
-      setSearchRes(res)
+      await apiService.aggregatedSearch(search, selectedAPIs, customAPIs, newResults => {
+        setSearchRes(prevResults => {
+          const allResults = [...prevResults, ...newResults]
+          // 对合并后的结果进行排序
+          allResults.sort((a, b) => {
+            const nameCompare = (a.vod_name || '').localeCompare(b.vod_name || '')
+            if (nameCompare !== 0) return nameCompare
+            return (a.source_name || '').localeCompare(b.source_name || '')
+          })
+          return allResults
+        })
+      })
+    } catch (error) {
+      console.error('搜索时发生错误:', error)
+      // 可选：在这里处理错误，例如显示一个错误消息
     } finally {
       setLoading(false)
     }
@@ -62,7 +77,7 @@ export default function SearchResult() {
           {searchRes && ` (${searchRes.length}个)`}
         </h2>
         <p className="mt-1 text-sm text-gray-600">搜索结果来自 {selectedAPIs.length} 个源</p>
-        {loading && <p className="mt-2 text-gray-500">正在搜索中...</p>}
+        {loading && <p className="mt-2 text-gray-500">正在从各资源站玩命搜索中...</p>}
       </div>
 
       {/* 搜索结果网格 */}

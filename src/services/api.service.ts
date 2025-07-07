@@ -247,69 +247,59 @@ class ApiService {
   }
 
   // 聚合搜索
-  async aggregatedSearch(
+  aggregatedSearch(
     query: string,
     selectedAPIs: string[],
     customAPIs: CustomApi[],
-  ): Promise<VideoItem[]> {
+    onNewResults: (results: VideoItem[]) => void,
+  ): Promise<void[]> {
     // 检查是否有选中的 API
     if (selectedAPIs.length === 0) {
       console.warn('没有选中任何 API 源')
-      return []
+      return Promise.resolve([])
     }
 
-    // 直接对所有选中的 API 进行搜索
-    const searchPromises: Promise<VideoItem[]>[] = []
+    const seen = new Set<string>()
 
-    selectedAPIs.forEach(apiId => {
+    // 直接对所有选中的 API 进行搜索
+    const searchPromises = selectedAPIs.map(apiId => {
+      let promise: Promise<VideoItem[]> | undefined
+
       if (apiId.startsWith('custom_')) {
         // 处理自定义 API
         const customIndex = parseInt(apiId.replace('custom_', ''))
         const customApi = customAPIs[customIndex]
         if (customApi) {
-          searchPromises.push(
-            this.searchSingleSource(query, 'custom', customApi.url, customApi.name),
-          )
+          promise = this.searchSingleSource(query, 'custom', customApi.url, customApi.name)
         }
       } else if (API_SITES[apiId]) {
         // 内置 API
-        searchPromises.push(this.searchSingleSource(query, apiId))
+        promise = this.searchSingleSource(query, apiId)
+      }
+
+      if (promise) {
+        return promise
+          .then(results => {
+            if (Array.isArray(results) && results.length > 0) {
+              const newUniqueResults: VideoItem[] = []
+              results.forEach(item => {
+                const key = `${item.source_code}_${item.vod_id}`
+                if (!seen.has(key)) {
+                  seen.add(key)
+                  newUniqueResults.push(item)
+                }
+              })
+              if (newUniqueResults.length > 0) {
+                onNewResults(newUniqueResults)
+              }
+            }
+          })
+          .catch(error => {
+            console.warn(`${apiId} 源搜索失败:`, error)
+          })
       }
     })
-
-    try {
-      const resultsArray = await Promise.all(searchPromises)
-      let allResults: VideoItem[] = []
-
-      resultsArray.forEach(results => {
-        if (Array.isArray(results) && results.length > 0) {
-          allResults = allResults.concat(results)
-        }
-      })
-
-      // 去重
-      const uniqueResults: VideoItem[] = []
-      const seen = new Set<string>()
-
-      allResults.forEach(item => {
-        const key = `${item.source_code}_${item.vod_id}`
-        if (!seen.has(key)) {
-          seen.add(key)
-          uniqueResults.push(item)
-        }
-      })
-
-      // 排序
-      uniqueResults.sort((a, b) => {
-        const nameCompare = (a.vod_name || '').localeCompare(b.vod_name || '')
-        if (nameCompare !== 0) return nameCompare
-        return (a.source_name || '').localeCompare(b.source_name || '')
-      })
-      return uniqueResults
-    } catch (error) {
-      console.error('聚合搜索错误:', error)
-      return []
-    }
+    return Promise.all(searchPromises.filter(Boolean) as Promise<void>[])
   }
 
   // 搜索单个源

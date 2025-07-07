@@ -40,8 +40,11 @@ const HistoryList = () => {
             shadow="sm"
             onPress={() => console.log('item pressed')}
           >
-            <NavLink to={`/video/${item.sourceCode}/${item.vodId}/${item.episodeIndex}`}>
-              <div className="flex h-[30vw] md:h-[8rem]">
+            <NavLink
+              className="w-full"
+              to={`/video/${item.sourceCode}/${item.vodId}/${item.episodeIndex}`}
+            >
+              <div className="flex h-[30vw] w-full md:h-[8rem]">
                 <div className="relative shrink-0">
                   <Image
                     alt={item.title}

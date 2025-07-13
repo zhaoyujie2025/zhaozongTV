@@ -3,7 +3,6 @@
 [![License: MIT](https://img.shields.io/badge/license-MIT-green)](LICENSE) [![Node.js](https://img.shields.io/badge/node-%3E%3D20-brightgreen)]() [![pnpm](https://img.shields.io/badge/pnpm-%3E%3D9.15.4-blue)]() [![Vite](https://img.shields.io/badge/vite-%5E6.3.5-yellowgreen)]()
 
 <p align="center">
-  <!-- TODO: 替换为项目演示 GIF 或截图链接 -->
   <img src="https://ouonnki.site/upload/CleanShot%202025-07-13%20at%2016.53.42%402x.png" alt="App Screenshot" width="600"/>
 </p>
 

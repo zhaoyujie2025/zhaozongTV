@@ -49,7 +49,7 @@ function App() {
       setShowUpdateModal(true)
     }
     // 域名更换提示
-    if (window.location.hostname !== 'tv.ouonnki.site') {
+    if (window.location.hostname === 'tv.new.ouonnki.site') {
       addToast({
         title: '此访问地址即将失效',
         hideCloseButton: true,

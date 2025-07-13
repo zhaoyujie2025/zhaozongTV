@@ -185,8 +185,16 @@ export const useApiStore = create<ApiStore>()(
           }))
 
           return [...builtInAPIs, ...customAPIIds].filter(item => {
-            if (!isIncludeAdult && API_SITES[item.key].adult) {
-              return false
+            if (!isIncludeAdult) {
+              if (!item.key.startsWith('custom_') && API_SITES[item.key]?.adult) {
+                return false
+              }
+              if (item.key.startsWith('custom_')) {
+                const index = parseInt(item.key.replace('custom_', ''))
+                if (state.customAPIs[index]?.isAdult) {
+                  return false
+                }
+              }
             }
             return true
           })

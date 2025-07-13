@@ -3,9 +3,7 @@
   "framework": "vite",
   "cleanUrls": true,
   "rewrites": [
-    {
-      "source": "/:path((?!api).*)",
-      "destination": "/index.html"
-    }
+    { "source": "/api/:path*", "destination": "/api/:path*" },
+    { "source": "/:path*", "destination": "/index.html" }
   ]
 }

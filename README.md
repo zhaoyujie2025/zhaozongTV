@@ -1,6 +1,6 @@
 # <img src="https://ouonnki.site/upload/logo.svg" alt="OuonnkiTV Logo" width="80" style="position:relative; top:1rem;"/> OuonnkiTV
 
-[![License: MIT](https://img.shields.io/badge/license-MIT-green)](LICENSE) [![Node.js](https://img.shields.io/badge/node-%3E%3D20-brightgreen)]() [![pnpm](https://img.shields.io/badge/pnpm-%3E%3D9.15.4-blue)]() [![Vite](https://img.shields.io/badge/vite-%5E6.3.5-yellowgreen)]()
+[![License](https://img.shields.io/badge/license-Apache%202.0-blue)](LICENSE) [![Node.js](https://img.shields.io/badge/node-%3E%3D20-brightgreen)]() [![pnpm](https://img.shields.io/badge/pnpm-%3E%3D9.15.4-blue)]() [![Vite](https://img.shields.io/badge/vite-%5E6.3.5-yellowgreen)]()
 
 <p align="center">
   <img src="https://ouonnki.site/upload/CleanShot%202025-07-13%20at%2016.53.42%402x.png" alt="App Screenshot" width="600"/>
@@ -31,11 +31,23 @@
 
 [![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https://github.com/Ouonnki/OuonnkiTV&build-command=pnpm%20build&install-command=pnpm%20install&output-directory=dist)
 
+**Vercel手动详细部署方法**
+- Fork 或克隆本仓库到您的 GitHub/GitLab 账户
+- 登录 Vercel，点击 "New Project"
+- 导入您的仓库
+- 在 "Build & Output Settings" 中配置：
+  - Install Command：`pnpm install`
+  - Build Command：`pnpm build`
+  - Output Directory：`dist`
+- ⚠️ 重要：在 "Settings" > "Environment Variables" 中添加 `VITE_PROXY_URL`，值为 `/api/proxy?url=`
+- 点击 "Deploy"
+
 ---
 
 ## 📖 简介
 
 **OuonnkiTV** 是一个使用 **React** + **Vite** + **TypeScript** 构建的现代化视频播放和搜索前端应用，支持跨设备流畅播放、历史记录管理和个性化设置。
+本项目基于 LibreSpark/LibreTV 进行重构与增强。
 
 ## ✨ 特性
 
@@ -139,7 +151,7 @@ VITE_PROXY_URL=https://cors.zme.ink/
 
 ## 📜 许可证
 
-本项目遵循 [MIT 许可证](LICENSE)。 
+本项目遵循 [Apache License 2.0](LICENSE)。 
 
 ## ⚠️ 免责声明
  **本项目仅作为视频搜索工具，不存储、上传或分发任何视频内容。所有视频均来自第三方 API 接口提供的搜索结果。如有侵权内容，请联系相应的内容提供方。**

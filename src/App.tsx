@@ -1,5 +1,5 @@
 import { OkiLogo, SearchIcon, SettingIcon } from '@/components/icons'
-import { Button, Input, Chip } from '@heroui/react'
+import { Button, Input, Chip, addToast } from '@heroui/react'
 import { useEffect, useState } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { useSearchHistory, useSearch } from '@/hooks'
@@ -47,6 +47,45 @@ function App() {
   useEffect(() => {
     if (hasNewVersion()) {
       setShowUpdateModal(true)
+    }
+    // 域名更换提示
+    if (window.location.hostname !== 'tv.ouonnki.site') {
+      addToast({
+        title: '此访问地址即将失效',
+        hideCloseButton: true,
+        variant: 'flat',
+        description: (
+          <div className="flex flex-col gap-2">
+            <p>请使用新地址访问：</p>
+            <a href="https://tv.ouonnki.site" className="text-blue-500">
+              https://tv.ouonnki.site
+            </a>
+            <p className="text-sm font-bold text-red-500">将在 10 秒后自动跳转</p>
+          </div>
+        ),
+        endContent: (
+          <Button
+            size="sm"
+            variant="bordered"
+            radius="full"
+            color="danger"
+            onPress={() => {
+              window.location.href = 'https://tv.ouonnki.site'
+            }}
+          >
+            前往新地址
+          </Button>
+        ),
+        shouldShowTimeoutProgress: true,
+        timeout: 10000,
+        classNames: {
+          base: 'bg-white/20 shadow-lg shadow-gray-500/10 backdrop-blur-2xl',
+          icon: 'text-red-500 w-8 h-8',
+        },
+      })
+      setTimeout(() => {
+        window.location.replace('https://tv.ouonnki.site')
+      }, 10000)
     }
   }, [])
 

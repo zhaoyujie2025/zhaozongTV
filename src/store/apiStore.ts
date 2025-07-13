@@ -36,6 +36,8 @@ interface ApiActions {
   deselectAllAPIs: () => void
   // 检查是否有成人 API 被选中
   hasAdultAPISelected: () => boolean
+  // 获取所有 API 源状态
+  getAllAPIs: (isIncludeAdult?: boolean) => { key: string; name: string }[]
 }
 
 type ApiStore = ApiState & ApiActions
@@ -169,6 +171,25 @@ export const useApiStore = create<ApiStore>()(
           })
 
           return hasCustomAdult
+        },
+
+        getAllAPIs: (isIncludeAdult: boolean = false) => {
+          const state = get()
+          const builtInAPIs = Object.entries(API_SITES).map(([key, value]) => ({
+            key,
+            name: value.name,
+          }))
+          const customAPIIds = state.customAPIs.map((_, index) => ({
+            key: `custom_${index}`,
+            name: state.customAPIs[index].name,
+          }))
+
+          return [...builtInAPIs, ...customAPIIds].filter(item => {
+            if (!isIncludeAdult && API_SITES[item.key].adult) {
+              return false
+            }
+            return true
+          })
         },
       })),
       {

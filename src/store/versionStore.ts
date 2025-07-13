@@ -51,6 +51,19 @@ const formatDate = (dateStr: string) => {
 // 版本更新历史
 const VERSION_UPDATES: VersionUpdate[] = [
   {
+    version: '1.2.0',
+    title: '新增视频源管理功能',
+    date: formatDate('2025-07-14'),
+    features: [
+      '新增系统视频源管理功能，支持添加、删除视频源',
+      '新增添加自定义视频源功能，支持添加自定义视频源',
+    ],
+    fixes: ['优化了视频源管理功能', '优化视频搜索逻辑，增快搜索速度'],
+    breaking: [
+      '旧版域名https://tv.new.ouonnki.site即将失效,请尽快使用新版域名访问https://tv.ouonnki.site',
+    ],
+  },
+  {
     version: '1.1.2',
     title: '新增观看记录功能',
     date: formatDate('2025-07-06'),

@@ -2,6 +2,14 @@
   "version": 2,
   "installCommand": "pnpm install",
   "framework": "vite",
-  "cleanUrls": true,
-  "rewrites": [{ "source": "/(.*)", "destination": "/index.html" }]
+  "rewrites": [
+    {
+      "source": "/proxy/:path*",
+      "destination": "/api/proxy.ts"
+    },
+    {
+      "source": "/(.*)",
+      "destination": "/index.html"
+    }
+  ]
 }

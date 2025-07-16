@@ -27,4 +27,8 @@
   .scrollbar-hide::-webkit-scrollbar {
     display: none; /* Chrome, Safari, Opera */
   }
+  .vertical-text {
+    writing-mode: vertical-rl;
+    text-orientation: upright;
+  }
 }

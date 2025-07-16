@@ -1,5 +1,13 @@
-import { OkiLogo, SearchIcon, SettingIcon } from '@/components/icons'
-import { Button, Input, Chip, addToast } from '@heroui/react'
+import { OkiLogo, SearchIcon, SettingIcon, CloseIcon } from '@/components/icons'
+import {
+  Button,
+  Input,
+  Chip,
+  addToast,
+  Popover,
+  PopoverTrigger,
+  PopoverContent,
+} from '@heroui/react'
 import { useEffect, useState } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { useSearchHistory, useSearch } from '@/hooks'
@@ -13,10 +21,12 @@ import SettingsModal from '@/components/SettingsModal'
 import { useDisclosure } from '@heroui/react'
 
 function App() {
+  // 删除控制
+  const [isSearchHistoryDeleteOpen, setIsSearchHistoryDeleteOpen] = useState(false)
   // modal  控制
   const { isOpen, onOpen, onOpenChange } = useDisclosure()
 
-  const { searchHistory, removeSearchHistoryItem } = useSearchHistory()
+  const { searchHistory, removeSearchHistoryItem, clearSearchHistory } = useSearchHistory()
   const { search, setSearch, searchMovie } = useSearch()
   const { hasNewVersion, setShowUpdateModal } = useVersionStore()
   const [buttonTransitionStatus, setButtonTransitionStatus] = useState({
@@ -24,7 +34,6 @@ function App() {
     filter: 'blur(5px)',
   })
   const [buttonIsDisabled, setButtonIsDisabled] = useState(true)
-  const [isInputFocused, setIsInputFocused] = useState(false)
   const [hoveredChipId, setHoveredChipId] = useState<string | null>(null)
 
   useEffect(() => {
@@ -124,9 +133,6 @@ function App() {
         <div className="flex h-full min-h-screen w-full flex-col items-center justify-start md:min-h-0 md:justify-center">
           <motion.div
             layoutId="app-logo"
-            animate={{
-              filter: isInputFocused ? 'blur(6px)' : 'blur(0px)',
-            }}
             transition={{ duration: 0.4 }}
             className="mt-[7rem] flex translate-x-[-1rem] items-end gap-2 text-[1.5rem] md:mt-[10rem] md:text-[2rem]"
           >
@@ -146,13 +152,8 @@ function App() {
             layoutId="search-container"
             initial={{ width: 'min(30rem, 90vw)' }}
             whileHover={{
-              scale: isInputFocused ? 1.2 : 1.02,
-              width: 'min(50rem, 90vw)',
-            }}
-            animate={{
-              scale: isInputFocused ? 1.2 : 1,
-              width: isInputFocused ? 'min(50rem, 90vw)' : 'min(30rem, 90vw)',
-              translateY: isInputFocused ? '-0.5rem' : '0rem',
+              scale: 1.03,
+              width: 'min(30rem, 90vw)',
             }}
             className="mt-[1rem] h-fit px-4 md:px-0"
           >
@@ -176,8 +177,6 @@ function App() {
               value={search}
               onValueChange={setSearch}
               onKeyDown={handleKeyDown}
-              onFocus={() => setIsInputFocused(true)}
-              onBlur={() => setIsInputFocused(false)}
               endContent={
                 <motion.div
                   initial={{ opacity: 0, filter: 'blur(5px)' }}
@@ -202,56 +201,102 @@ function App() {
               }
             />
           </motion.div>
-          <motion.div
-            initial={{ filter: isBrowser ? 'opacity(20%)' : 'opacity(100%)' }}
-            animate={{
-              filter: isInputFocused
-                ? isBrowser
-                  ? 'blur(6px) opacity(20%)'
-                  : 'blur(6px) opacity(100%)'
-                : isBrowser
-                  ? 'blur(0px) opacity(20%)'
-                  : 'blur(0px) opacity(100%)',
-            }}
-            whileHover={{
-              filter: isInputFocused ? 'blur(6px) opacity(100%)' : 'blur(0px) opacity(100%)',
-            }}
-            transition={{ duration: 0.4 }}
-            className="mt-[3rem] flex w-[88vw] flex-col items-start gap-2 px-4 md:w-[42rem] md:flex-row md:px-0"
-          >
-            <p className="text-lg font-bold">搜索历史：</p>
-            <div className="flex w-full flex-wrap gap-3 md:w-[34rem]">
-              <AnimatePresence mode="popLayout">
-                {searchHistory.map(item => (
-                  <motion.div
-                    key={item.id}
-                    layout
-                    exit={{ opacity: 0, filter: 'blur(5px)' }}
-                    onMouseEnter={() => setHoveredChipId(item.id)}
-                    onMouseLeave={() => setHoveredChipId(null)}
-                  >
-                    <Chip
+          {searchHistory.length > 0 && (
+            <motion.div
+              initial={{ filter: isBrowser ? 'opacity(20%)' : 'opacity(100%)' }}
+              whileHover={{
+                filter: 'opacity(100%)',
+              }}
+              transition={{ duration: 0.4 }}
+              className="mt-[3rem] flex w-[88vw] flex-col items-start gap-2 px-4 md:w-[42rem] md:flex-row md:px-0"
+            >
+              <p className="text-lg font-bold">搜索历史：</p>
+              <div className="flex flex-col">
+                <div className="flex w-full flex-wrap gap-3 md:w-[34rem]">
+                  <AnimatePresence mode="popLayout">
+                    {searchHistory.map(item => (
+                      <motion.div
+                        key={item.id}
+                        layout
+                        exit={{ opacity: 0, filter: 'blur(5px)' }}
+                        onMouseEnter={() => setHoveredChipId(item.id)}
+                        onMouseLeave={() => setHoveredChipId(null)}
+                      >
+                        <Chip
+                          classNames={{
+                            base: 'cursor-pointer border-2 border-gray-400 hover:border-black hover:scale-101 transition-all duration-300',
+                            content: `transition-all duration-200 ${hoveredChipId === item.id ? 'translate-x-0' : 'translate-x-2'}`,
+                            closeButton: `transition-opacity duration-200 ${hoveredChipId === item.id ? 'opacity-100' : 'opacity-0'}`,
+                          }}
+                          variant="bordered"
+                          size="lg"
+                          onClick={() => searchMovie(item.content)}
+                          onClose={() => {
+                            if (hoveredChipId === item.id) {
+                              removeSearchHistoryItem(item.id)
+                            }
+                          }}
+                        >
+                          {item.content}
+                        </Chip>
+                      </motion.div>
+                    ))}
+                  </AnimatePresence>
+                </div>
+                <div className="flex justify-end">
+                  <div className="w-fit">
+                    <Popover
+                      placement={isBrowser ? 'top-end' : 'bottom-start'}
+                      isOpen={isSearchHistoryDeleteOpen}
+                      onOpenChange={setIsSearchHistoryDeleteOpen}
+                      isKeyboardDismissDisabled
+                      crossOffset={isBrowser ? -20 : -5}
                       classNames={{
-                        base: 'cursor-pointer border-2 border-gray-400 hover:border-black hover:scale-101 transition-all duration-300',
-                        content: `transition-all duration-200 ${hoveredChipId === item.id ? 'translate-x-0' : 'translate-x-2'}`,
-                        closeButton: `transition-opacity duration-200 ${hoveredChipId === item.id ? 'opacity-100' : 'opacity-0'}`,
-                      }}
-                      variant="bordered"
-                      size="lg"
-                      onClick={() => searchMovie(item.content)}
-                      onClose={() => {
-                        if (hoveredChipId === item.id) {
-                          removeSearchHistoryItem(item.id)
-                        }
+                        base: 'bg-transparent',
+                        content: 'bg-white/20 shadow-lg shadow-gray-500/10 backdrop-blur-xl',
                       }}
                     >
-                      {item.content}
-                    </Chip>
-                  </motion.div>
-                ))}
-              </AnimatePresence>
-            </div>
-          </motion.div>
+                      <PopoverTrigger>
+                        <motion.div
+                          initial={{ color: '#cccccc' }}
+                          whileHover={{ color: '#999999' }}
+                          transition={{ duration: 0.4 }}
+                          className="flex justify-end gap-2 pt-[1.5rem] pr-[1.8rem] hover:cursor-pointer"
+                        >
+                          <CloseIcon size={20} />
+                          <p className="text-sm">清除全部</p>
+                        </motion.div>
+                      </PopoverTrigger>
+                      <PopoverContent>
+                        <div className="px-1 py-2">
+                          <p>确定要清除全部搜索记录吗？</p>
+                          <div className="mt-[.6rem] flex justify-end gap-[.5rem]">
+                            <Button
+                              className="h-[1.5rem] w-[3rem] min-w-[3rem] text-[.7rem] font-bold"
+                              radius="sm"
+                              variant="shadow"
+                              onPress={() => setIsSearchHistoryDeleteOpen(false)}
+                            >
+                              取消
+                            </Button>
+                            <Button
+                              className="h-[1.5rem] w-[3rem] min-w-[3rem] text-[.7rem] font-bold"
+                              variant="shadow"
+                              color="danger"
+                              radius="sm"
+                              onPress={clearSearchHistory}
+                            >
+                              确定
+                            </Button>
+                          </div>
+                        </div>
+                      </PopoverContent>
+                    </Popover>
+                  </div>
+                </div>
+              </div>
+            </motion.div>
+          )}
         </div>
         <Analytics />
         <SpeedInsights />

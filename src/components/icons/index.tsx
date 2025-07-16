@@ -1,6 +1,7 @@
-import logoSvg from '../../assets/logo.svg'
-import recentSvg from '../../assets/recently.svg'
-import settingSvg from '../../assets/setting.svg'
+import logoSvg from '@/assets/logo.svg'
+import recentSvg from '@/assets/recently.svg'
+import settingSvg from '@/assets/setting.svg'
+import NoItemSvg from '@/assets/noitem.svg'
 
 export const OkiLogo = ({ size = 36, ...props }: { size?: number }) => {
   return (
@@ -249,5 +250,38 @@ export const CheckCircleIcon = ({
         clipRule="evenodd"
       />
     </svg>
+  )
+}
+
+export const CloseIcon = ({
+  size = 20,
+  ...props
+}: { size?: number } & React.SVGProps<SVGSVGElement>) => {
+  return (
+    <svg
+      aria-hidden="true"
+      fill="currentColor"
+      focusable="false"
+      height={size}
+      role="presentation"
+      viewBox="0 0 1024 1024"
+      width={size}
+      {...props}
+    >
+      <path d="M597.795527 511.488347 813.564755 295.718095c23.833825-23.833825 23.833825-62.47489 0.001023-86.307691-23.832801-23.832801-62.47489-23.833825-86.307691 0L511.487835 425.180656 295.717583 209.410404c-23.833825-23.833825-62.475913-23.833825-86.307691 0-23.832801 23.832801-23.833825 62.47489 0 86.308715l215.769228 215.769228L209.410915 727.258599c-23.833825 23.833825-23.833825 62.47489 0 86.307691 23.832801 23.833825 62.473867 23.833825 86.307691 0l215.768205-215.768205 215.769228 215.769228c23.834848 23.833825 62.475913 23.832801 86.308715 0 23.833825-23.833825 23.833825-62.47489 0-86.307691L597.795527 511.488347z"></path>
+    </svg>
+  )
+}
+
+export const NoItemIcon = ({ size = 36, ...props }: { size?: number }) => {
+  return (
+    <img
+      draggable={false}
+      src={NoItemSvg}
+      alt="No Item Icon"
+      width={size}
+      height={size}
+      {...props}
+    />
   )
 }

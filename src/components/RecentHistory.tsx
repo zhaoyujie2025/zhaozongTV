@@ -1,4 +1,4 @@
-import { RecentIcon } from '@/components/icons'
+import { CloseIcon, NoItemIcon, RecentIcon, TrashIcon } from '@/components/icons'
 import { Card, Chip, Image, Tooltip, Progress } from '@heroui/react'
 import { ScrollShadow } from '@heroui/react'
 import { useViewingHistoryStore } from '@/store/viewingHistoryStore'
@@ -12,13 +12,20 @@ import { useMemo, useState } from 'react'
 import { createPortal } from 'react-dom'
 import { isBrowser } from 'react-device-detect'
 import clsx from 'clsx'
+import { motion } from 'framer-motion'
+import type { ViewingHistoryItem } from '@/types'
 
 dayjs.extend(relativeTime)
 dayjs.locale('zh-cn')
 dayjs.extend(duration)
 
-const HistoryList = () => {
-  const { viewingHistory } = useViewingHistoryStore()
+const HistoryList = ({
+  viewingHistory,
+  removeViewingHistory,
+}: {
+  viewingHistory: ViewingHistoryItem[]
+  removeViewingHistory: (item: ViewingHistoryItem) => void
+}) => {
   const filteredHistory = useMemo(() => {
     const historyMap = new Map()
     viewingHistory.forEach(item => {
@@ -29,9 +36,17 @@ const HistoryList = () => {
     })
     return Array.from(historyMap.values())
   }, [viewingHistory])
+  if (filteredHistory.length === 0) {
+    return (
+      <div className="mt-5 flex flex-col items-center justify-center gap-2">
+        <NoItemIcon size={128} />
+        <p className="mt-2 text-sm text-gray-500">暂无观看记录</p>
+      </div>
+    )
+  }
   return (
     <>
-      <ScrollShadow hideScrollBar className="h-full overflow-y-auto bg-transparent p-2">
+      <ScrollShadow hideScrollBar className="overflow-y-auto bg-transparent p-2">
         {filteredHistory.map((item, index) => (
           <Card
             className="@container mb-[.6rem] h-[30vw] w-full bg-white/30 shadow-md/5 transition-all duration-500 hover:scale-101 hover:shadow-lg md:h-[8rem] md:w-[25rem]"
@@ -82,8 +97,21 @@ const HistoryList = () => {
                     >
                       {API_SITES[item.sourceCode]?.name}
                     </Chip>
-                    <div className="text-[3.5cqw] text-gray-500 md:text-sm">
-                      {dayjs(item.timestamp).fromNow()}
+                    <div className="flex items-center justify-center gap-[.6rem] text-[3.5cqw] text-gray-500 md:text-sm">
+                      <p>{dayjs(item.timestamp).fromNow()}</p>
+                      <motion.div
+                        initial={{ color: '#888888' }}
+                        whileHover={{ color: '#d6204b', backgroundColor: '#f0f0f0' }}
+                        transition={{ duration: 0.4 }}
+                        className="flex h-[1.5rem] w-[1.5rem] items-center justify-center rounded-full"
+                        onClick={e => {
+                          e.preventDefault()
+                          e.stopPropagation()
+                          removeViewingHistory(item)
+                        }}
+                      >
+                        <TrashIcon size={16} />
+                      </motion.div>
                     </div>
                   </div>
                   <div className="line-clamp-1 text-[4.5cqw] font-bold text-gray-700 transition-colors duration-200 group-hover:text-indigo-400 group-hover:underline md:text-lg">
@@ -107,6 +135,9 @@ const HistoryList = () => {
             </NavLink>
           </Card>
         ))}
+        <div className="mt-5 flex items-center justify-center">
+          <p className="text-sm text-gray-500">没有更多了</p>
+        </div>
       </ScrollShadow>
     </>
   )
@@ -114,18 +145,44 @@ const HistoryList = () => {
 
 export default function RecentHistory() {
   const [isOpen, setIsOpen] = useState(false)
+  const { viewingHistory, removeViewingHistory, clearViewingHistory } = useViewingHistoryStore()
   return (
     <>
       <Tooltip
         isOpen={isBrowser ? undefined : false}
         classNames={{
-          base: 'bg-transparent h-[60vh]',
-          content: 'h-full p-2 bg-white/50 shadow-xl/30 shadow-gray-500/30 backdrop-blur-lg',
+          base: 'bg-transparent',
+          content:
+            'flex justify-start min-h-[40vh] max-h-[60vh] p-2 bg-white/50 shadow-xl/30 shadow-gray-500/30 backdrop-blur-lg',
         }}
         content={
           <>
-            <div className="mt-2 mb-2 text-center text-lg font-bold text-gray-800">观看记录</div>
-            <HistoryList />
+            <div className="h-full">
+              <div className="mt-2 mb-2 flex w-full items-end justify-between">
+                <div className="flex-1"></div>
+                <div className="text-center text-lg font-bold text-gray-800">观看记录</div>
+                <div className="flex flex-1 items-center justify-end">
+                  {viewingHistory.length > 0 && (
+                    <motion.div
+                      initial={{ color: '#aaaaaa' }}
+                      whileHover={{ color: '#666666' }}
+                      transition={{ duration: 0.4 }}
+                      className="flex items-center justify-center gap-1 pr-3 hover:cursor-pointer"
+                      onClick={clearViewingHistory}
+                    >
+                      <CloseIcon size={16} />
+                      <p className="text-sm">清除历史</p>
+                    </motion.div>
+                  )}
+                </div>
+              </div>
+              <div className="min-w-[25rem]">
+                <HistoryList
+                  viewingHistory={viewingHistory}
+                  removeViewingHistory={removeViewingHistory}
+                />
+              </div>
+            </div>
           </>
         }
         shadow="lg"
@@ -149,12 +206,33 @@ export default function RecentHistory() {
             )}
             onClick={() => setIsOpen(false)}
           >
-            <div className="flex h-[90vh] w-[90vw] flex-col items-center justify-center">
-              <div className="mt-[5vh] mb-2 h-fit text-center text-2xl font-bold text-gray-800">
-                观看记录
+            <div className="flex h-[90vh] w-[90vw] flex-col items-center justify-start">
+              <div className="mt-[5vh] mb-2 flex h-fit w-full items-end justify-between px-4">
+                <div className="flex-1"></div>
+                <div className="text-center text-2xl font-bold text-gray-800">观看记录</div>
+                <div className="flex flex-1 items-center justify-end">
+                  {viewingHistory.length > 0 && (
+                    <motion.div
+                      initial={{ color: '#aaaaaa' }}
+                      whileHover={{ color: '#666666' }}
+                      transition={{ duration: 0.4 }}
+                      className="flex items-center justify-center gap-1"
+                      onClick={e => {
+                        e.stopPropagation()
+                        clearViewingHistory()
+                      }}
+                    >
+                      <CloseIcon size={20} />
+                      <p className="text-base">清除历史</p>
+                    </motion.div>
+                  )}
+                </div>
               </div>
-              <div className="w-full flex-1 overflow-hidden" onClick={e => e.stopPropagation()}>
-                <HistoryList />
+              <div className="w-full overflow-hidden" onClick={e => e.stopPropagation()}>
+                <HistoryList
+                  viewingHistory={viewingHistory}
+                  removeViewingHistory={removeViewingHistory}
+                />
               </div>
             </div>
           </div>,

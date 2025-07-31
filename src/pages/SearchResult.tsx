@@ -1,12 +1,13 @@
 import { useParams, useNavigate } from 'react-router'
 import { useSearch } from '@/hooks'
 import { apiService } from '@/services/api.service'
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { type VideoItem } from '@/types'
 import { useApiStore } from '@/store/apiStore'
 import { Card, CardFooter, Image, CardHeader, Chip } from '@heroui/react'
 
 export default function SearchResult() {
+  const abortCtrlRef = useRef<AbortController | null>(null)
   const { selectedAPIs, selectAllAPIs, customAPIs } = useApiStore()
   const navigate = useNavigate()
 
@@ -18,24 +19,36 @@ export default function SearchResult() {
   // 调用搜索内容
   const fetchSearchRes = async () => {
     if (!search) return
+    // 取消上一次未完成的搜索
+    abortCtrlRef.current?.abort()
+    const controller = new AbortController()
+    abortCtrlRef.current = controller
     setLoading(true)
-    setSearchRes([]) // 开始新搜索前清空旧结果
+    setSearchRes([])
     try {
-      await apiService.aggregatedSearch(search, selectedAPIs, customAPIs, newResults => {
-        setSearchRes(prevResults => {
-          const allResults = [...prevResults, ...newResults]
-          // 对合并后的结果进行排序
-          allResults.sort((a, b) => {
-            const nameCompare = (a.vod_name || '').localeCompare(b.vod_name || '')
-            if (nameCompare !== 0) return nameCompare
-            return (a.source_name || '').localeCompare(b.source_name || '')
+      await apiService.aggregatedSearch(
+        search,
+        selectedAPIs,
+        customAPIs,
+        newResults => {
+          setSearchRes(prevResults => {
+            const allResults = [...prevResults, ...newResults]
+            allResults.sort((a, b) => {
+              const nameCompare = (a.vod_name || '').localeCompare(b.vod_name || '')
+              if (nameCompare !== 0) return nameCompare
+              return (a.source_name || '').localeCompare(b.source_name || '')
+            })
+            return allResults
           })
-          return allResults
-        })
-      })
+        },
+        controller.signal,
+      )
     } catch (error) {
-      console.error('搜索时发生错误:', error)
-      // 可选：在这里处理错误，例如显示一个错误消息
+      if ((error as Error).name === 'AbortError') {
+        console.log('搜索已取消')
+      } else {
+        console.error('搜索时发生错误:', error)
+      }
     } finally {
       setLoading(false)
     }
@@ -59,6 +72,13 @@ export default function SearchResult() {
       fetchSearchRes()
     }
   }, [search])
+
+  // 组件卸载时取消未完成的搜索
+  useEffect(() => {
+    return () => {
+      abortCtrlRef.current?.abort()
+    }
+  }, [])
 
   // 处理卡片点击
   const handleCardClick = (item: VideoItem) => {

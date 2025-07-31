@@ -246,60 +246,114 @@ class ApiService {
     }
   }
 
-  // 聚合搜索
+  // 并发控制辅助函数
+  private createConcurrencyLimiter(limit: number) {
+    let running = 0
+    const queue: (() => void)[] = []
+
+    const tryRun = () => {
+      while (running < limit && queue.length > 0) {
+        const next = queue.shift()
+        if (next) {
+          running++
+          next()
+        }
+      }
+    }
+
+    return <T>(task: () => Promise<T>): Promise<T> => {
+      return new Promise((resolve, reject) => {
+        const run = () => {
+          task()
+            .then(resolve)
+            .catch(reject)
+            .finally(() => {
+              running--
+              tryRun()
+            })
+        }
+
+        queue.push(run)
+        tryRun()
+      })
+    }
+  }
+
+  // 聚合搜索（支持 AbortSignal、并发控制和增量渲染）
   aggregatedSearch(
     query: string,
     selectedAPIs: string[],
     customAPIs: CustomApi[],
     onNewResults: (results: VideoItem[]) => void,
+    signal?: AbortSignal,
   ): Promise<void[]> {
-    // 检查是否有选中的 API
     if (selectedAPIs.length === 0) {
       console.warn('没有选中任何 API 源')
       return Promise.resolve([])
     }
 
+    let aborted = false
+    if (signal) {
+      if (signal.aborted) {
+        return Promise.reject(new DOMException('Aborted', 'AbortError'))
+      }
+      signal.addEventListener('abort', () => {
+        aborted = true
+      })
+    }
+
     const seen = new Set<string>()
+    const limiter = this.createConcurrencyLimiter(3)
 
-    // 直接对所有选中的 API 进行搜索
-    const searchPromises = selectedAPIs.map(apiId => {
-      let promise: Promise<VideoItem[]> | undefined
-
-      if (apiId.startsWith('custom_')) {
-        // 处理自定义 API
-        const customIndex = parseInt(apiId.replace('custom_', ''))
-        const customApi = customAPIs[customIndex]
-        if (customApi) {
-          promise = this.searchSingleSource(query, 'custom', customApi.url, customApi.name)
-        }
-      } else if (API_SITES[apiId]) {
-        // 内置 API
-        promise = this.searchSingleSource(query, apiId)
-      }
-
-      if (promise) {
-        return promise
-          .then(results => {
-            if (Array.isArray(results) && results.length > 0) {
-              const newUniqueResults: VideoItem[] = []
-              results.forEach(item => {
-                const key = `${item.source_code}_${item.vod_id}`
-                if (!seen.has(key)) {
-                  seen.add(key)
-                  newUniqueResults.push(item)
-                }
-              })
-              if (newUniqueResults.length > 0) {
-                onNewResults(newUniqueResults)
-              }
+    const tasks = selectedAPIs.map(apiId =>
+      limiter(async () => {
+        if (aborted) return
+        let results: VideoItem[] = []
+        try {
+          if (apiId.startsWith('custom_')) {
+            const idx = parseInt(apiId.replace('custom_', ''))
+            const customApi = customAPIs[idx]
+            if (customApi) {
+              results = await this.searchSingleSource(
+                query,
+                'custom',
+                customApi.url,
+                customApi.name,
+              )
             }
-          })
-          .catch(error => {
-            console.warn(`${apiId} 源搜索失败:`, error)
-          })
-      }
-    })
-    return Promise.all(searchPromises.filter(Boolean) as Promise<void>[])
+          } else if (API_SITES[apiId]) {
+            results = await this.searchSingleSource(query, apiId)
+          }
+        } catch (error) {
+          if (aborted) return
+          console.warn(`${apiId} 源搜索失败:`, error)
+        }
+        if (aborted) return
+
+        const newUnique = results.filter(item => {
+          const key = `${item.source_code}_${item.vod_id}`
+          if (!seen.has(key)) {
+            seen.add(key)
+            return true
+          }
+          return false
+        })
+        if (aborted || newUnique.length === 0) return
+
+        onNewResults(newUnique)
+      })
+    )
+
+    const allPromise = Promise.all(tasks)
+    if (signal) {
+      const abortPromise = new Promise<void[]>((_, reject) => {
+        signal.addEventListener('abort', () => {
+          reject(new DOMException('Aborted', 'AbortError'))
+        })
+      })
+      return Promise.race([allPromise, abortPromise])
+    }
+    return allPromise
   }
 
   // 搜索单个源

@@ -1,23 +1,27 @@
+import React, { lazy, Suspense } from 'react'
 import { BrowserRouter, Routes, Route, useLocation } from 'react-router'
 import { AnimatePresence } from 'framer-motion'
-import Layout from '@/components/layouts/Layout'
-import SearchResult from '@/pages/SearchResult'
-import Detail from '@/pages/Detail'
-import Video from '@/pages/Video'
+
+const Layout = lazy(() => import('@/components/layouts/Layout'))
+const SearchResult = lazy(() => import('@/pages/SearchResult'))
+const Detail = lazy(() => import('@/pages/Detail'))
+const Video = lazy(() => import('@/pages/Video'))
 
 function AnimatedRoutes({ children }: { children: React.ReactNode }) {
   const location = useLocation()
 
   return (
     <AnimatePresence mode="wait">
-      <Routes location={location} key={location.pathname}>
-        <Route path="/" element={children} />
-        <Route element={<Layout />}>
-          <Route path="search/:query" element={<SearchResult />} />
-          <Route path="video/:sourceCode/:vodId/:episodeIndex" element={<Video />} />
-          <Route path="detail/:sourceCode/:vodId" element={<Detail />} />
-        </Route>
-      </Routes>
+      <Suspense fallback={<div>加载中...</div>}>
+        <Routes location={location} key={location.pathname}>
+          <Route path="/" element={children} />
+          <Route element={<Layout />}>
+            <Route path="search/:query" element={<SearchResult />} />
+            <Route path="video/:sourceCode/:vodId/:episodeIndex" element={<Video />} />
+            <Route path="detail/:sourceCode/:vodId" element={<Detail />} />
+          </Route>
+        </Routes>
+      </Suspense>
     </AnimatePresence>
   )
 }

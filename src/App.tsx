@@ -8,11 +8,11 @@ import {
   PopoverTrigger,
   PopoverContent,
 } from '@heroui/react'
-import { useEffect, useState } from 'react'
+import React, { useEffect, useState, lazy, Suspense } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { useSearchHistory, useSearch } from '@/hooks'
 import { useVersionStore } from '@/store/versionStore'
-import UpdateModal from '@/components/UpdateModal'
+const UpdateModal = lazy(() => import('@/components/UpdateModal'))
 import { Analytics } from '@vercel/analytics/react'
 import { SpeedInsights } from '@vercel/speed-insights/react'
 import RecentHistory from '@/components/RecentHistory'
@@ -110,14 +110,18 @@ function App() {
 
   return (
     <>
-      <SettingsModal isOpen={isOpen} onOpenChange={onOpenChange} />
+      <Suspense fallback={null}>
+        <SettingsModal isOpen={isOpen} onOpenChange={onOpenChange} />
+      </Suspense>
       <motion.div
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         exit={{ opacity: 0 }}
         transition={{ duration: 0.3 }}
       >
-        <UpdateModal />
+        <Suspense fallback={null}>
+          <UpdateModal />
+        </Suspense>
         <motion.div layoutId="history-icon" className="absolute top-5 right-5 z-50 flex gap-4">
           <Button isIconOnly className="bg-white/20 shadow-lg shadow-gray-500/10 backdrop-blur-2xl">
             <RecentHistory />

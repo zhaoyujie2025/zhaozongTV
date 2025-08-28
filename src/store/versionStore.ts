@@ -51,6 +51,14 @@ const formatDate = (dateStr: string) => {
 // 版本更新历史
 const VERSION_UPDATES: VersionUpdate[] = [
   {
+    version: '1.2.1',
+    title: '移除内部源',
+    date: formatDate('2025-08-28'),
+    features: ['移除内部源', '移除演示站迁移提示'],
+    fixes: [],
+    breaking: [],
+  },
+  {
     version: '1.2.0',
     title: '新增视频源管理功能',
     date: formatDate('2025-07-14'),

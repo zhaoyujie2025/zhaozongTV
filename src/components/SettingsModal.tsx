@@ -281,7 +281,7 @@ export default function SettingsModal({
                             <PackageIcon size={64} className="text-gray-400" />
                           </motion.div>
                           <p className="text-sm font-medium">暂无可用视频源</p>
-                          <p className="text-xs text-gray-400">请联系管理员添加视频源</p>
+                          <p className="text-xs text-gray-400">快去添加源后使用吧！</p>
                         </motion.div>
                       ) : (
                         <Table
@@ -405,7 +405,7 @@ export default function SettingsModal({
                   </CardBody>
                 </Card>
               </Tab>
-              <Tab className="w-full" key="custom-source" title="自定义源">
+              <Tab className="w-full" key="custom-source" title="添加视频源">
                 <Card classNames={CardClassNames}>
                   <CardBody className="relative flex flex-col overflow-hidden p-0">
                     {/* 表格区域 - 始终保持完整高度 */}
@@ -428,14 +428,12 @@ export default function SettingsModal({
                           >
                             <ServerIcon size={64} className="text-gray-400" />
                           </motion.div>
-                          <p className="text-sm font-medium">暂无自定义源</p>
-                          <p className="text-xs text-gray-400">
-                            点击下方按钮添加您的第一个自定义源
-                          </p>
+                          <p className="text-sm font-medium">暂无视频源</p>
+                          <p className="text-xs text-gray-400">点击下方按钮添加您的第一个视频源</p>
                         </motion.div>
                       ) : (
                         <Table
-                          aria-label="自定义源列表"
+                          aria-label="视频源列表"
                           isHeaderSticky
                           removeWrapper
                           classNames={{
@@ -576,7 +574,7 @@ export default function SettingsModal({
                           </motion.span>
                         }
                       >
-                        新增自定义源
+                        新增视频源
                       </Button>
                     </div>
 

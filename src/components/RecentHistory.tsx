@@ -46,7 +46,7 @@ const HistoryList = ({
   }
   return (
     <>
-      <ScrollShadow hideScrollBar className="overflow-y-auto bg-transparent p-2">
+      <ScrollShadow hideScrollBar className="max-h-[50vh] overflow-y-auto bg-transparent p-2">
         {filteredHistory.map((item, index) => (
           <Card
             className="@container mb-[.6rem] h-[30vw] w-full bg-white/30 shadow-md/5 transition-all duration-500 hover:scale-101 hover:shadow-lg md:h-[8rem] md:w-[25rem]"
@@ -95,7 +95,7 @@ const HistoryList = ({
                         content: 'text-[3cqw] md:text-xs',
                       }}
                     >
-                      {API_SITES[item.sourceCode]?.name}
+                      {API_SITES[item.sourceCode]?.name || item.sourceCode}
                     </Chip>
                     <div className="flex items-center justify-center gap-[.6rem] text-[3.5cqw] text-gray-500 md:text-sm">
                       <p>{dayjs(item.timestamp).fromNow()}</p>
@@ -150,6 +150,7 @@ export default function RecentHistory() {
     <>
       <Tooltip
         isOpen={isBrowser ? undefined : false}
+        // isOpen={true}
         classNames={{
           base: 'bg-transparent',
           content:

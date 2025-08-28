@@ -46,8 +46,8 @@ export const useApiStore = create<ApiStore>()(
   devtools(
     persist(
       immer<ApiStore>((set, get) => ({
-        // 初始状态
-        selectedAPIs: ['heimuer'], // 默认选中黑木耳
+        // 初始状态 - 内置源已移除，默认为空
+        selectedAPIs: [], // 不再默认选中任何内置源
         customAPIs: [],
         yellowFilterEnabled: true,
         adFilteringEnabled: true,
@@ -202,7 +202,7 @@ export const useApiStore = create<ApiStore>()(
       })),
       {
         name: 'ouonnki-tv-api-store', // 持久化存储的键名
-        version: 2, // 更新版本号以触发迁移
+        version: 3, // 更新版本号以触发迁移
         migrate: (persistedState: unknown, version: number) => {
           const state = persistedState as Partial<ApiState>
 
@@ -243,11 +243,15 @@ export const useApiStore = create<ApiStore>()(
 
               state.selectedAPIs = cleanedSelectedAPIs
 
-              // 如果清理后没有选中任何源，默认选中 heimuer
-              if (state.selectedAPIs.length === 0) {
-                state.selectedAPIs = ['heimuer']
-              }
+              // 如果清理后没有选中任何源，不设置默认源（因为内置源已移除）
+              // 用户需要手动添加自定义源
             }
+          }
+
+          if (version < 3) {
+            const apiSet = new Set()
+            state.customAPIs?.forEach(api => apiSet.add(api.name))
+            state.selectedAPIs = state.selectedAPIs?.filter(api => apiSet.has(api))
           }
 
           return state

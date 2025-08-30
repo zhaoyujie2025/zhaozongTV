@@ -26,6 +26,8 @@ interface ApiActions {
   deselectAllAPIs: () => void
   // 初始化环境变量中的视频源
   initializeEnvSources: () => void
+  // 批量导入视频源
+  importVideoAPIs: (apis: VideoApi[]) => void
 }
 
 type ApiStore = ApiState & ApiActions
@@ -101,6 +103,22 @@ export const useApiStore = create<ApiStore>()(
                 }
               })
             }
+          })
+        },
+
+        importVideoAPIs: (apis: VideoApi[]) => {
+          set(state => {
+            apis.forEach(api => {
+              // 检查是否已存在相同的源（基于name和url）
+              const exists = state.videoAPIs.some(
+                existingApi =>
+                  existingApi.id === api.id ||
+                  (existingApi.name === api.name && existingApi.url === api.url),
+              )
+              if (!exists) {
+                state.videoAPIs.push(api)
+              }
+            })
           })
         },
       })),

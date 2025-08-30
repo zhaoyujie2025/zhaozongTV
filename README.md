@@ -1,35 +1,65 @@
-# <img src="https://ouonnki.site/upload/logo.svg" alt="OuonnkiTV Logo" width="80" style="position:relative; top:1rem;"/> OuonnkiTV
-
-[![License](https://img.shields.io/badge/license-Apache%202.0-blue)](LICENSE) [![Node.js](https://img.shields.io/badge/node-%3E%3D20-brightgreen)]() [![pnpm](https://img.shields.io/badge/pnpm-%3E%3D9.15.4-blue)]() [![Vite](https://img.shields.io/badge/vite-%5E6.3.5-yellowgreen)]()
+<h1 align="center">
+  <img src="https://ouonnki.site/upload/logo.svg" alt="OuonnkiTV Logo" width="80"/><br/>
+  OuonnkiTV
+</h1>
 
 <p align="center">
-  <img src="https://ouonnki.site/upload/CleanShot%202025-07-13%20at%2016.53.42%402x.png" alt="App Screenshot" width="600"/>
+  现代化、可扩展的视频搜索与播放前端。
 </p>
 
-## 📑 目录
+<p align="center">
+  <a href="LICENSE"><img src="https://img.shields.io/badge/license-Apache%202.0-blue" alt="License"/></a>
+  <img src="https://img.shields.io/badge/node-%3E%3D20-brightgreen" alt="Node.js >=20"/>
+  <img src="https://img.shields.io/badge/pnpm-%3E%3D9.15.4-blue" alt="pnpm >=9.15.4"/>
+  <img src="https://img.shields.io/badge/vite-%5E6.3.5-yellowgreen" alt="Vite"/>
+  <a href="https://github.com/Ouonnki/OuonnkiTV/stargazers"><img src="https://img.shields.io/github/stars/Ouonnki/OuonnkiTV?style=social" alt="GitHub stars"/></a>
+</p>
 
-- [ OuonnkiTV](#-ouonnkitv)
-  - [📑 目录](#-目录)
-  - [🚀 一键部署](#-一键部署)
-  - [📖 简介](#-简介)
-  - [✨ 特性](#-特性)
-  - [🚀 快速开始](#-快速开始)
-    - [🛠 环境依赖](#-环境依赖)
-    - [💻 本地开发](#-本地开发)
-    - [📦 构建 \& 预览](#-构建--预览)
-  - [🌳 环境变量](#-环境变量)
-    - [基础配置](#基础配置)
-    - [初始视频源配置](#初始视频源配置)
-      - [配置格式](#配置格式)
-      - [字段说明](#字段说明)
-      - [配置示例](#配置示例)
-      - [在 Vercel 中配置](#在-vercel-中配置)
-  - [🗂 项目结构](#-项目结构)
-  - [⚙️ 配置](#️-配置)
-  - [📋 常用命令](#-常用命令)
-  - [🤝 贡献](#-贡献)
-  - [📜 许可证](#-许可证)
-  - [⚠️ 免责声明](#️-免责声明)
+<p align="center">
+  <a href="#-简介">简介</a> ·
+  <a href="#-特性">特性</a> ·
+  <a href="#-快速开始">快速开始</a> ·
+  <a href="#-视频源导入功能">导入</a> ·
+  <a href="#-环境变量">环境变量</a> ·
+  <a href="#-项目结构">结构</a> ·
+  <a href="#-技术栈">技术栈</a> ·
+  <a href="#-贡献">贡献</a> ·
+  <a href="#-许可证">许可证</a>
+</p>
+
+---
+
+<details>
+<summary><strong>📑 目录（展开 / 收起）</strong></summary>
+
+- [🚀 一键部署](#-一键部署)
+- [📖 简介](#-简介)
+- [✨ 特性](#-特性)
+- [🚀 快速开始](#-快速开始)
+  - [🛠 环境依赖](#-环境依赖)
+  - [💻 本地开发](#-本地开发)
+  - [📦 构建 \& 预览](#-构建--预览)
+- [🔄 视频源导入功能](#-视频源导入功能)
+  - [导入方式](#导入方式)
+    - [1. **本地文件导入** 📁](#1-本地文件导入-)
+    - [2. **JSON 文本导入** 📝](#2-json-文本导入-)
+    - [3. **URL 导入** 🌐](#3-url-导入-)
+  - [JSON格式说明](#json格式说明)
+  - [使用步骤](#使用步骤)
+- [🌳 环境变量](#-环境变量)
+  - [基础配置](#基础配置)
+  - [初始视频源配置](#初始视频源配置)
+    - [在 Vercel 中配置](#在-vercel-中配置)
+- [🗂 项目结构](#-项目结构)
+- [⚙️ 配置](#️-配置)
+- [📋 常用命令](#-常用命令)
+- [🧱 技术栈](#-技术栈)
+- [🤝 贡献](#-贡献)
+- [📜 许可证](#-许可证)
+- [⚠️ 免责声明](#️-免责声明)
+- [⭐ Star 趋势](#-star-趋势)
+
+</details>
 
 ## 🚀 一键部署
 
@@ -52,18 +82,21 @@
 
 ## 📖 简介
 
-**OuonnkiTV** 是一个使用 **React** + **Vite** + **TypeScript** 构建的现代化视频播放和搜索前端应用，支持跨设备流畅播放、历史记录管理和个性化设置。
-本项目基于 LibreSpark/LibreTV 进行重构与增强。
+**OuonnkiTV** 是一个由 **React + Vite + TypeScript** 打造的现代化前端应用，用于聚合搜索与播放网络视频资源，支持跨端播放、搜索与观看历史、以及可配置的视频源管理。项目在 LibreSpark/LibreTV 的基础上进行了重构与增强（模块化、状态管理优化、交互体验提升）。
 
 ## ✨ 特性
 
-- 🔍 **视频搜索**：实时关键词推荐与历史记录
-- ▶️ **流畅播放**：集成 `xgplayer` 播放 HLS/MP4
-- 📝 **详情展示**：视频封面、标题与描述一目了然
-- 🕒 **历史记录**：自动保存观看和搜索记录
-- ⚙️ **设置面板**：自定义主题、语言等偏好
-- 🚀 **性能优化**：按需加载、代码分割与缓存
-- 📱 **响应式设计**：桌面和移动设备无缝适配
+| 类别 | 特性 | 说明 |
+| ---- | ---- | ---- |
+| 搜索 | 🔍 实时搜索提示 | 支持历史记录与建议联想 |
+| 播放 | ▶️ 流畅播放 | 基于 `xgplayer`，支持 HLS / MP4 |
+| 详情 | 📝 内容展示 | 标题、封面、简介清晰呈现 |
+| 记录 | 🕒 历史追踪 | 自动保存观看 / 搜索历史，可清理 |
+| 导入 | 🔄 批量导入 | 文件 / JSON 文本 / URL 多方式导入视频源 |
+| 设置 | ⚙️ 个性化 | 主题、偏好可配置 |
+| 性能 | 🚀 优化策略 | 代码分割、缓存与按需加载 |
+| 适配 | 📱 响应式 | 移动 / 桌面自适应布局 |
+| 稳定 | 🧪 状态管理 | 基于 Zustand，数据结构清晰 |
 
 ## 🚀 快速开始
 
@@ -95,6 +128,73 @@ pnpm run build
 pnpm run preview
 # 访问 http://localhost:4173
 ```
+
+## 🔄 视频源导入功能
+
+支持多种方式快速配置多个视频源：
+
+### 导入方式
+
+#### 1. **本地文件导入** 📁
+- 支持 JSON 格式文件
+- 拖拽或点击选择文件
+- 自动验证文件格式
+
+#### 2. **JSON 文本导入** 📝
+- 直接粘贴 JSON 配置
+- 实时语法检查
+- 支持多行格式化
+
+#### 3. **URL 导入** 🌐
+- 从远程 URL 获取配置
+- 支持 GitHub、Gitee 等代码托管平台
+- 自动处理网络请求
+
+### JSON格式说明
+
+**基本格式：**
+```json
+[
+  {
+    "id": "source1",
+    "name": "示例视频源",
+    "url": "https://api.example.com/search",
+    "detailUrl": "https://api.example.com/detail",
+    "isEnabled": true
+  }
+]
+```
+
+**字段说明：**
+- `id`: 源的唯一标识符（可选，系统会自动生成）
+- `name`: 视频源显示名称（必需）
+- `url`: 搜索API地址（必需）
+- `detailUrl`: 详情API地址（可选，默认使用 url）
+- `isEnabled`: 是否启用该源（可选，默认为 true）
+
+**支持格式：**
+- ✅ 单个对象：`{"name":"源名称","url":"API地址"}`
+- ✅ 对象数组：`[{"name":"源1","url":"API1"},{"name":"源2","url":"API2"}]`
+- ✅ 多行格式化 JSON
+- ✅ 紧凑单行 JSON
+
+### 使用步骤
+
+1. **进入设置页面**：点击右上角设置图标
+2. **打开导入功能**：点击"导入源"按钮
+3. **选择导入方式**：
+   - 📁 **文件导入**：点击选择 JSON 文件或拖拽文件到页面
+   - 📝 **文本导入**：将 JSON 配置粘贴到文本框中
+   - 🌐 **URL导入**：输入包含 JSON 配置的 URL 地址
+4. **确认导入**：点击"开始导入"按钮
+5. **查看结果**：系统会显示导入成功的源数量，并自动关闭导入窗口
+
+**导入特性：**
+- 🔄 **自动去重**：重复的源会被自动过滤
+- ✅ **数据验证**：自动检查 JSON 格式和必需字段
+- 🚨 **错误提示**：详细的错误信息帮助排查问题
+- 📝 **Toast通知**：实时反馈导入状态
+- 🎯 **批量处理**：一次可导入多个视频源
 
 ## 🌳 环境变量
 
@@ -200,15 +300,42 @@ VITE_PROXY_URL=https://cors.zme.ink/
 
 ---
 
+## 🧱 技术栈
+
+| 分层 | 技术 | 用途 |
+| ---- | ---- | ---- |
+| 前端框架 | React 19 + TypeScript | 组件化与类型安全 |
+| 构建工具 | Vite 6 | 极速开发与构建 |
+| UI & 动画 | TailwindCSS 4 / Framer Motion / HeroUI | 样式与交互动效 |
+| 播放器 | xgplayer / xgplayer-hls | 视频播放核心 |
+| 状态管理 | Zustand + Immer | 轻量状态与不可变数据 | 
+| 时间处理 | Day.js | 时间格式化与相对时间 |
+| 部署 | Vercel | 托管与边缘加速 |
+
 ## 🤝 贡献
 
-欢迎通过提交 [Issue](https://github.com/<your-username>/OuonnkiTV/issues) 或 [Pull Request](https://github.com/<your-username>/OuonnkiTV/pulls) 参与贡献！
+欢迎通过提交 [Issue](https://github.com/Ouonnki/OuonnkiTV/issues) 或 [Pull Request](https://github.com/Ouonnki/OuonnkiTV/pulls) 贡献代码、文档或想法。
+
+建议流程：
+1. Fork 仓库并创建特性分支：`feat/your-feature`
+2. 保持提交简洁、语义化（如 `feat: add xxx`）
+3. 提交 PR 并描述改动动机与效果
+4. 关联 Issue（若有）
 
 ## 📜 许可证
 
-本项目遵循 [Apache License 2.0](LICENSE)。 
+本项目遵循 [Apache License 2.0](LICENSE)。
 
 ## ⚠️ 免责声明
- **本项目仅作为视频搜索工具，不存储、上传或分发任何视频内容。所有视频均来自第三方 API 接口提供的搜索结果。如有侵权内容，请联系相应的内容提供方。**
 
-本项目开发者不对使用本项目产生的任何后果负责。使用本项目时，您必须遵守当地的法律法规。 
+**本项目仅作为视频搜索与聚合工具，不存储、上传或分发任何视频内容；所有内容均来自第三方 API 的搜索结果。若发现侵权，请联系原始内容提供方进行处理。**
+
+开发者不对使用本项目造成的任何直接或间接后果负责。使用前请确保遵守当地法律法规。
+
+---
+
+## ⭐ Star 趋势
+
+[![Star History Chart](https://api.star-history.com/svg?repos=Ouonnki/OuonnkiTV&type=Date)](https://star-history.com/#Ouonnki/OuonnkiTV&Date)
+
+如果本项目对你有帮助，欢迎 ⭐ Star 支持，让更多人看到它。🙌

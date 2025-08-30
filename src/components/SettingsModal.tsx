@@ -37,8 +37,10 @@ import {
   TrashIcon,
   ServerIcon,
   PackageIcon,
+  DownloadIcon,
 } from '@/components/icons'
 import { createPortal } from 'react-dom'
+import ImportSourceModal from './ImportSourceModal'
 
 const AllSelectedCheckbox = ({
   onValueChange,
@@ -176,6 +178,9 @@ export default function SettingsModal({
   const [urlError, setUrlError] = useState('')
   const [copiedUrl, setCopiedUrl] = useState('')
   const [copiedPosition, setCopiedPosition] = useState<{ x: number; y: number } | null>(null)
+
+  // 导入源模态框状态
+  const [isImportModalOpen, setIsImportModalOpen] = useState(false)
 
   // URL验证函数
   const validateUrl = (url: string) => {
@@ -584,24 +589,36 @@ export default function SettingsModal({
 
                     {/* 底部按钮区域 - 始终固定在底部 */}
                     <div className="border-default-200 border-t p-4">
-                      <Button
-                        size="sm"
-                        variant="flat"
-                        radius="full"
-                        className="w-full bg-gradient-to-br from-gray-100 to-gray-200 font-medium text-gray-700 shadow-sm transition-all duration-300 hover:from-gray-200 hover:to-gray-300 hover:shadow-md"
-                        onPress={() => setIsAddingCustomSource(true)}
-                        startContent={
-                          <motion.span
-                            initial={{ rotate: 0 }}
-                            whileHover={{ rotate: 90 }}
-                            transition={{ duration: 0.3 }}
-                          >
-                            <PackageIcon size={16} />
-                          </motion.span>
-                        }
-                      >
-                        新增视频源
-                      </Button>
+                      <div className="flex gap-2">
+                        <Button
+                          size="sm"
+                          variant="flat"
+                          radius="full"
+                          className="flex-1 bg-gradient-to-br from-gray-100 to-gray-200 font-medium text-gray-700 shadow-sm transition-all duration-300 hover:from-gray-200 hover:to-gray-300 hover:shadow-md"
+                          onPress={() => setIsAddingCustomSource(true)}
+                          startContent={
+                            <motion.span
+                              initial={{ rotate: 0 }}
+                              whileHover={{ rotate: 90 }}
+                              transition={{ duration: 0.3 }}
+                            >
+                              <PackageIcon size={16} />
+                            </motion.span>
+                          }
+                        >
+                          新增视频源
+                        </Button>
+                        <Button
+                          size="sm"
+                          variant="bordered"
+                          radius="full"
+                          className="border-blue-200 bg-gradient-to-br from-blue-50 to-blue-100 font-medium text-blue-700 shadow-sm transition-all duration-300 hover:scale-105 hover:from-blue-100 hover:to-blue-200 hover:shadow-md"
+                          onPress={() => setIsImportModalOpen(true)}
+                          startContent={<DownloadIcon size={16} />}
+                        >
+                          导入源
+                        </Button>
+                      </div>
                     </div>
 
                     {/* 新增表单覆盖层 */}
@@ -867,6 +884,9 @@ export default function SettingsModal({
           </AnimatePresence>,
           document.body,
         )}
+
+      {/* 导入源模态框 */}
+      <ImportSourceModal isOpen={isImportModalOpen} onOpenChange={setIsImportModalOpen} />
     </Modal>
   )
 }

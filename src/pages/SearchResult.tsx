@@ -1,20 +1,24 @@
 import { useParams, useNavigate } from 'react-router'
 import { useSearch } from '@/hooks'
 import { apiService } from '@/services/api.service'
-import { useState, useEffect, useRef } from 'react'
+import { useState, useEffect, useRef, useMemo } from 'react'
 import { type VideoItem } from '@/types'
 import { useApiStore } from '@/store/apiStore'
 import { Card, CardFooter, Image, CardHeader, Chip } from '@heroui/react'
 
 export default function SearchResult() {
   const abortCtrlRef = useRef<AbortController | null>(null)
-  const { selectedAPIs, selectAllAPIs, customAPIs } = useApiStore()
+  const { videoAPIs } = useApiStore()
   const navigate = useNavigate()
 
   const { query } = useParams()
   const { search, setSearch, searchMovie } = useSearch()
   const [searchRes, setSearchRes] = useState<VideoItem[]>([])
   const [loading, setLoading] = useState(false)
+
+  const selectedAPIs = useMemo(() => {
+    return videoAPIs.filter(api => api.isEnabled)
+  }, [videoAPIs])
 
   // 调用搜索内容
   const fetchSearchRes = async () => {
@@ -29,7 +33,6 @@ export default function SearchResult() {
       await apiService.aggregatedSearch(
         search,
         selectedAPIs,
-        customAPIs,
         newResults => {
           setSearchRes(prevResults => {
             const allResults = [...prevResults, ...newResults]
@@ -62,12 +65,6 @@ export default function SearchResult() {
   }, [query])
 
   useEffect(() => {
-    // TODO: 临时调试代码 - 选中所有源（不包括成人源）
-    // 只在默认状态（只选中黑木耳）时才自动选中所有源
-    if (selectedAPIs.length === 1 && selectedAPIs[0] === 'heimuer') {
-      console.log('[DEBUG] 检测到默认配置，自动选中所有非成人源')
-      selectAllAPIs(true) // true 表示排除成人源
-    }
     if (search) {
       fetchSearchRes()
     }

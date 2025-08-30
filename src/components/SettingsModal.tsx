@@ -1,14 +1,34 @@
-import { Modal, ModalContent, ModalHeader, ModalBody, ModalFooter, Button } from '@heroui/react'
-import { Tabs, Tab } from '@heroui/react'
-import { Card, CardBody } from '@heroui/react'
-import { Checkbox } from '@heroui/react'
-import { useApiStore } from '@/store/apiStore'
-import { useCheckbox, Chip, VisuallyHidden, Tooltip } from '@heroui/react'
-import { useState } from 'react'
-import { Table, TableHeader, TableColumn, TableBody, TableRow, TableCell } from '@heroui/react'
-import { Input } from '@heroui/react'
-import type { CustomApi } from '@/types'
+import {
+  useCheckbox,
+  Chip,
+  VisuallyHidden,
+  Tooltip,
+  Checkbox,
+  Modal,
+  ModalContent,
+  ModalHeader,
+  ModalBody,
+  ModalFooter,
+  Button,
+  Tabs,
+  Tab,
+  Card,
+  CardBody,
+  Table,
+  TableHeader,
+  TableColumn,
+  TableBody,
+  TableRow,
+  TableCell,
+  Input,
+} from '@heroui/react'
 import { motion, AnimatePresence } from 'framer-motion'
+import { useMemo, useState } from 'react'
+import { v4 as uuidv4 } from 'uuid'
+
+import { useApiStore } from '@/store/apiStore'
+import type { VideoApi } from '@/types'
+
 import {
   CheckIcon,
   CircleCheckIcon,
@@ -135,21 +155,23 @@ export default function SettingsModal({
   }
   // 视频源设置
   const {
-    selectedAPIs,
-    setSelectedAPIs,
     selectAllAPIs,
     deselectAllAPIs,
-    getAllAPIs,
-    customAPIs,
-    addCustomAPI,
-    removeCustomAPI,
+    videoAPIs,
+    addAndUpdateVideoAPI,
+    removeVideoAPI,
+    setApiEnabled,
   } = useApiStore()
-  const apiInfos = getAllAPIs()
+  const selectedAPIs = useMemo(() => {
+    return videoAPIs.filter(api => api.isEnabled)
+  }, [videoAPIs])
+  const apiInfos = videoAPIs
 
   // 自定义源状态
   const [isAddingCustomSource, setIsAddingCustomSource] = useState(false)
   const [customSourceUrl, setCustomSourceUrl] = useState('')
   const [customSourceName, setCustomSourceName] = useState('')
+  const [customDetailUrl, setCustomDetailUrl] = useState('')
   const [isAddingAnimation, setIsAddingAnimation] = useState(false)
   const [urlError, setUrlError] = useState('')
   const [copiedUrl, setCopiedUrl] = useState('')
@@ -208,18 +230,21 @@ export default function SettingsModal({
       // 添加动画状态
       setIsAddingAnimation(true)
 
-      const newApi: CustomApi = {
+      const newApi: VideoApi = {
+        id: uuidv4(),
         url: customSourceUrl.trim(),
         name: customSourceName.trim(),
-        isAdult: false,
+        detailUrl: customDetailUrl.trim() || customSourceUrl.trim(), // detail留空时和url字段保持一致
+        isEnabled: true,
       }
 
       // 延迟添加以显示动画效果
       setTimeout(() => {
-        addCustomAPI(newApi)
+        addAndUpdateVideoAPI(newApi)
         // 重置状态
         setCustomSourceUrl('')
         setCustomSourceName('')
+        setCustomDetailUrl('')
         setIsAddingCustomSource(false)
         setIsAddingAnimation(false)
         setUrlError('')
@@ -231,15 +256,17 @@ export default function SettingsModal({
   const handleCancelAdd = () => {
     setCustomSourceUrl('')
     setCustomSourceName('')
+    setCustomDetailUrl('')
     setIsAddingCustomSource(false)
     setUrlError('')
   }
 
   // 表格数据
-  const tableData = customAPIs.map((api, index) => ({
+  const tableData = videoAPIs.map(api => ({
     source: api.url,
     name: api.name,
-    key: `custom_${index}`,
+    id: api.id,
+    api: api,
   }))
   return (
     <Modal
@@ -301,11 +328,11 @@ export default function SettingsModal({
                             <TableColumn>状态</TableColumn>
                           </TableHeader>
                           <TableBody items={apiInfos}>
-                            {(item: { key: string; name: string }) => {
-                              const index = apiInfos.findIndex(api => api.key === item.key)
-                              const isChecked = selectedAPIs.includes(item.key)
+                            {(item: VideoApi) => {
+                              const index = apiInfos.findIndex(api => api.id === item.id)
+                              const isChecked = selectedAPIs.some(api => api.id === item.id)
                               return (
-                                <TableRow key={item.key}>
+                                <TableRow key={item.id}>
                                   <TableCell>
                                     <motion.div
                                       initial={{ opacity: 0, scale: 0.8 }}
@@ -316,13 +343,7 @@ export default function SettingsModal({
                                         color="default"
                                         isSelected={isChecked}
                                         onValueChange={checked => {
-                                          if (checked) {
-                                            setSelectedAPIs([...selectedAPIs, item.key])
-                                          } else {
-                                            setSelectedAPIs(
-                                              selectedAPIs.filter(k => k !== item.key),
-                                            )
-                                          }
+                                          setApiEnabled(item.id, checked)
                                         }}
                                       />
                                     </motion.div>
@@ -386,7 +407,7 @@ export default function SettingsModal({
                       <AllSelectedCheckbox
                         onValueChange={isAllSelected => {
                           if (isAllSelected) {
-                            selectAllAPIs(true)
+                            selectAllAPIs()
                           } else {
                             deselectAllAPIs()
                           }
@@ -449,10 +470,15 @@ export default function SettingsModal({
                             <TableColumn>操作</TableColumn>
                           </TableHeader>
                           <TableBody items={tableData}>
-                            {(item: { source: string; name: string; key: string }) => {
-                              const index = parseInt(item.key.replace('custom_', ''))
+                            {(item: {
+                              source: string
+                              name: string
+                              id: string
+                              api: VideoApi
+                            }) => {
+                              const index = tableData.findIndex(data => data.id === item.id)
                               return (
-                                <TableRow key={item.key}>
+                                <TableRow key={item.id}>
                                   <TableCell>
                                     <motion.div
                                       initial={{ opacity: 0, x: -20 }}
@@ -541,7 +567,7 @@ export default function SettingsModal({
                                         radius="full"
                                         className="text-gray-400 transition-colors duration-200 hover:bg-red-50 hover:text-red-500"
                                         onPress={() => {
-                                          removeCustomAPI(index)
+                                          removeVideoAPI(item.id)
                                         }}
                                       >
                                         <TrashIcon size={16} />
@@ -667,9 +693,38 @@ export default function SettingsModal({
                               </motion.div>
 
                               <motion.div
+                                initial={{ x: -20, opacity: 0 }}
+                                animate={{ x: 0, opacity: 1 }}
+                                transition={{ delay: 0.25 }}
+                              >
+                                <Input
+                                  size="sm"
+                                  radius="md"
+                                  variant="bordered"
+                                  label="详情API地址 (可选)"
+                                  placeholder="留空则使用源地址"
+                                  description={
+                                    customDetailUrl.trim()
+                                      ? '将使用此地址获取视频详情'
+                                      : '留空时将使用源地址作为详情API'
+                                  }
+                                  value={customDetailUrl}
+                                  onValueChange={setCustomDetailUrl}
+                                  classNames={{
+                                    label: 'text-xs text-gray-600 font-medium',
+                                    input: 'text-sm',
+                                    inputWrapper:
+                                      'bg-gradient-to-br from-default-100/50 to-default-200/30 hover:from-default-200/50 hover:to-default-300/30 transition-all duration-300',
+                                    description: 'text-xs text-gray-500',
+                                  }}
+                                  startContent={<ServerIcon size={16} className="text-gray-400" />}
+                                />
+                              </motion.div>
+
+                              <motion.div
                                 initial={{ y: 20, opacity: 0 }}
                                 animate={{ y: 0, opacity: 1 }}
-                                transition={{ delay: 0.3 }}
+                                transition={{ delay: 0.35 }}
                                 className="flex gap-2"
                               >
                                 <Tooltip

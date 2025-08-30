@@ -30,6 +30,7 @@
     "react-router": "^7.6.2",
     "relativeTime": "link:dayjs/plugin/relativeTime",
     "tailwindcss": "^4.1.8",
+    "uuid": "^11.1.0",
     "xgplayer": "^3.0.22",
     "xgplayer-hls": "^3.0.22",
     "zh-cn": "link:dayjs/locale/zh-cn",

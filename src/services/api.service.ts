@@ -1,5 +1,5 @@
-import { API_SITES, API_CONFIG, PROXY_URL, M3U8_PATTERN } from '@/config/api.config'
-import type { SearchResponse, DetailResponse, VideoItem, CustomApi } from '@/types'
+import { API_CONFIG, PROXY_URL, M3U8_PATTERN } from '@/config/api.config'
+import type { SearchResponse, DetailResponse, VideoItem, VideoApi } from '@/types'
 
 class ApiService {
   private async fetchWithTimeout(
@@ -24,24 +24,17 @@ class ApiService {
   }
 
   // 搜索视频
-  async searchVideos(query: string, source: string, customApi?: string): Promise<SearchResponse> {
+  async searchVideos(query: string, api: VideoApi): Promise<SearchResponse> {
     try {
       if (!query) {
         throw new Error('缺少搜索参数')
       }
 
-      // 验证 API 源
-      if (source === 'custom' && !customApi) {
-        throw new Error('使用自定义API时必须提供API地址')
+      if (!api || !api.url) {
+        throw new Error('无效的API配置')
       }
 
-      if (!API_SITES[source] && source !== 'custom') {
-        throw new Error('无效的API来源')
-      }
-
-      const apiUrl = customApi
-        ? `${customApi}${API_CONFIG.search.path}${encodeURIComponent(query)}`
-        : `${API_SITES[source].api}${API_CONFIG.search.path}${encodeURIComponent(query)}`
+      const apiUrl = `${api.url}${API_CONFIG.search.path}${encodeURIComponent(query)}`
 
       const response = await this.fetchWithTimeout(PROXY_URL + encodeURIComponent(apiUrl), {
         headers: API_CONFIG.search.headers,
@@ -59,11 +52,9 @@ class ApiService {
 
       // 添加源信息到每个结果
       data.list.forEach((item: VideoItem) => {
-        item.source_name = source === 'custom' ? '自定义源' : API_SITES[source].name
-        item.source_code = source
-        if (source === 'custom') {
-          item.api_url = customApi
-        }
+        item.source_name = api.name
+        item.source_code = api.id
+        item.api_url = api.url
       })
 
       return {
@@ -81,11 +72,7 @@ class ApiService {
   }
 
   // 获取视频详情
-  async getVideoDetail(
-    id: string,
-    sourceCode: string,
-    customApi?: string,
-  ): Promise<DetailResponse> {
+  async getVideoDetail(id: string, api: VideoApi): Promise<DetailResponse> {
     try {
       if (!id) {
         throw new Error('缺少视频ID参数')
@@ -96,23 +83,13 @@ class ApiService {
         throw new Error('无效的视频ID格式')
       }
 
-      // 验证API源
-      if (sourceCode === 'custom' && !customApi) {
-        throw new Error('使用自定义API时必须提供API地址')
+      if (!api || !api.url) {
+        throw new Error('无效的API配置')
       }
 
-      if (!API_SITES[sourceCode] && sourceCode !== 'custom') {
-        throw new Error('无效的API来源')
-      }
-
-      // 特殊源处理
-      if (sourceCode === 'huangcang' && API_SITES[sourceCode].detail) {
-        return await this.handleSpecialSourceDetail(id, sourceCode)
-      }
-
-      const detailUrl = customApi
-        ? `${customApi}${API_CONFIG.detail.path}${id}`
-        : `${API_SITES[sourceCode].api}${API_CONFIG.detail.path}${id}`
+      // 使用 detailUrl 如果存在，否则使用 url
+      const baseUrl = api.detailUrl || api.url
+      const detailUrl = `${baseUrl}${API_CONFIG.detail.path}${id}`
 
       const response = await this.fetchWithTimeout(PROXY_URL + encodeURIComponent(detailUrl), {
         headers: API_CONFIG.detail.headers,
@@ -169,8 +146,8 @@ class ApiService {
           director: videoDetail.vod_director,
           actor: videoDetail.vod_actor,
           remarks: videoDetail.vod_remarks,
-          source_name: sourceCode === 'custom' ? '自定义源' : API_SITES[sourceCode].name,
-          source_code: sourceCode,
+          source_name: api.name,
+          source_code: api.id,
         },
       }
     } catch (error) {
@@ -180,69 +157,6 @@ class ApiService {
         msg: error instanceof Error ? error.message : '请求处理失败',
         episodes: [],
       }
-    }
-  }
-
-  // 处理特殊源详情
-  private async handleSpecialSourceDetail(id: string, sourceCode: string): Promise<DetailResponse> {
-    try {
-      const detailUrl = `${API_SITES[sourceCode].detail}/index.php/vod/detail/id/${id}.html`
-
-      const response = await this.fetchWithTimeout(PROXY_URL + encodeURIComponent(detailUrl), {
-        headers: {
-          'User-Agent':
-            'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36',
-        },
-      })
-
-      if (!response.ok) {
-        throw new Error(`详情页请求失败: ${response.status}`)
-      }
-
-      const html = await response.text()
-      let matches: string[] = []
-
-      if (sourceCode === 'ffzy') {
-        const ffzyPattern = /\$(https?:\/\/[^"'\s]+?\/\d{8}\/\d+_[a-f0-9]+\/index\.m3u8)/g
-        matches = html.match(ffzyPattern) || []
-      }
-
-      if (matches.length === 0) {
-        const generalPattern = /\$(https?:\/\/[^"'\s]+?\.m3u8)/g
-        matches = html.match(generalPattern) || []
-      }
-
-      // 去重
-      matches = [...new Set(matches)]
-
-      // 处理链接
-      matches = matches.map(link => {
-        link = link.substring(1)
-        const parenIndex = link.indexOf('(')
-        return parenIndex > 0 ? link.substring(0, parenIndex) : link
-      })
-
-      // 提取标题和简介
-      const titleMatch = html.match(/<h1[^>]*>([^<]+)<\/h1>/)
-      const titleText = titleMatch ? titleMatch[1].trim() : ''
-
-      const descMatch = html.match(/<div[^>]*class=["']sketch["'][^>]*>([\s\S]*?)<\/div>/)
-      const descText = descMatch ? descMatch[1].replace(/<[^>]+>/g, ' ').trim() : ''
-
-      return {
-        code: 200,
-        episodes: matches,
-        detailUrl,
-        videoInfo: {
-          title: titleText,
-          desc: descText,
-          source_name: API_SITES[sourceCode].name,
-          source_code: sourceCode,
-        },
-      }
-    } catch (error) {
-      console.error(`${API_SITES[sourceCode].name}详情获取失败:`, error)
-      throw error
     }
   }
 
@@ -282,8 +196,7 @@ class ApiService {
   // 聚合搜索（支持 AbortSignal、并发控制和增量渲染）
   aggregatedSearch(
     query: string,
-    selectedAPIs: string[],
-    customAPIs: CustomApi[],
+    selectedAPIs: VideoApi[],
     onNewResults: (results: VideoItem[]) => void,
     signal?: AbortSignal,
   ): Promise<void[]> {
@@ -305,28 +218,15 @@ class ApiService {
     const seen = new Set<string>()
     const limiter = this.createConcurrencyLimiter(3)
 
-    const tasks = selectedAPIs.map(apiId =>
+    const tasks = selectedAPIs.map(api =>
       limiter(async () => {
         if (aborted) return
         let results: VideoItem[] = []
         try {
-          if (apiId.startsWith('custom_')) {
-            const idx = parseInt(apiId.replace('custom_', ''))
-            const customApi = customAPIs[idx]
-            if (customApi) {
-              results = await this.searchSingleSource(
-                query,
-                'custom',
-                customApi.url,
-                customApi.name,
-              )
-            }
-          } else if (API_SITES[apiId]) {
-            results = await this.searchSingleSource(query, apiId)
-          }
+          results = await this.searchSingleSource(query, api)
         } catch (error) {
           if (aborted) return
-          console.warn(`${apiId} 源搜索失败:`, error)
+          console.warn(`${api.name} 源搜索失败:`, error)
         }
         if (aborted) return
 
@@ -341,7 +241,7 @@ class ApiService {
         if (aborted || newUnique.length === 0) return
 
         onNewResults(newUnique)
-      })
+      }),
     )
 
     const allPromise = Promise.all(tasks)
@@ -357,26 +257,15 @@ class ApiService {
   }
 
   // 搜索单个源
-  private async searchSingleSource(
-    query: string,
-    source: string,
-    customApi?: string,
-    customName?: string,
-  ): Promise<VideoItem[]> {
+  private async searchSingleSource(query: string, api: VideoApi): Promise<VideoItem[]> {
     try {
-      const result = await this.searchVideos(query, source, customApi)
+      const result = await this.searchVideos(query, api)
       if (result.code === 200 && result.list) {
-        // 如果是自定义源，更新源名称
-        if (source === 'custom' && customName) {
-          result.list.forEach(item => {
-            item.source_name = customName
-          })
-        }
         return result.list
       }
       return []
     } catch (error) {
-      console.warn(`${source}源搜索失败:`, error)
+      console.warn(`${api.name}源搜索失败:`, error)
       return []
     }
   }

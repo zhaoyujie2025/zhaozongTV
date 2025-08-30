@@ -61,8 +61,10 @@ export interface ViewingHistoryItem {
 }
 
 // 自定义 API
-export interface CustomApi {
+export interface VideoApi {
+  id: string
   name: string
   url: string
-  isAdult?: boolean
+  detailUrl?: string
+  isEnabled: boolean
 }

@@ -2,7 +2,6 @@ import { CloseIcon, NoItemIcon, RecentIcon, TrashIcon } from '@/components/icons
 import { Card, Chip, Image, Tooltip, Progress } from '@heroui/react'
 import { ScrollShadow } from '@heroui/react'
 import { useViewingHistoryStore } from '@/store/viewingHistoryStore'
-import { API_SITES } from '@/config/api.config'
 import dayjs from 'dayjs'
 import duration from 'dayjs/plugin/duration'
 import { NavLink } from 'react-router'
@@ -95,7 +94,7 @@ const HistoryList = ({
                         content: 'text-[3cqw] md:text-xs',
                       }}
                     >
-                      {API_SITES[item.sourceCode]?.name || item.sourceCode}
+                      {item.name}
                     </Chip>
                     <div className="flex items-center justify-center gap-[.6rem] text-[3.5cqw] text-gray-500 md:text-sm">
                       <p>{dayjs(item.timestamp).fromNow()}</p>

@@ -2,6 +2,7 @@ import { useParams, useLocation, useNavigate } from 'react-router'
 import { useState, useEffect } from 'react'
 import { apiService } from '@/services/api.service'
 import { type DetailResponse, type VideoItem } from '@/types'
+import { useApiStore } from '@/store/apiStore'
 import { Card, CardHeader, CardBody, Chip, Button, Spinner } from '@heroui/react'
 
 export default function Detail() {
@@ -9,6 +10,7 @@ export default function Detail() {
   const location = useLocation()
   const navigate = useNavigate()
   const videoItem = location.state?.videoItem as VideoItem | undefined
+  const { videoAPIs } = useApiStore()
 
   const [detail, setDetail] = useState<DetailResponse | null>(null)
   const [loading, setLoading] = useState(true)
@@ -20,8 +22,13 @@ export default function Detail() {
 
       setLoading(true)
       try {
-        const customApi = videoItem?.api_url
-        const response = await apiService.getVideoDetail(vodId, sourceCode, customApi)
+        // 根据 sourceCode 找到对应的 API 配置
+        const api = videoAPIs.find(api => api.id === sourceCode)
+        if (!api) {
+          throw new Error('未找到对应的API配置')
+        }
+
+        const response = await apiService.getVideoDetail(vodId, api)
         setDetail(response)
       } catch (error) {
         console.error('获取视频详情失败:', error)
@@ -31,7 +38,7 @@ export default function Detail() {
     }
 
     fetchDetail()
-  }, [sourceCode, vodId, videoItem])
+  }, [sourceCode, vodId, videoAPIs])
 
   // 处理播放按钮点击
   const handlePlayEpisode = (index: number) => {

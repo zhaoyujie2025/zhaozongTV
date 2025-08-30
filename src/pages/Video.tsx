@@ -22,8 +22,8 @@ export default function Video() {
   const playerRef = useRef<Player | null>(null)
   const containerRef = useRef<HTMLDivElement>(null)
 
-  // 从 store 获取自定义 API 配置
-  const { customAPIs } = useApiStore()
+  // 从 store 获取 API 配置
+  const { videoAPIs } = useApiStore()
   const { addViewingHistory, viewingHistory } = useViewingHistoryStore()
 
   // 状态管理
@@ -57,21 +57,14 @@ export default function Video() {
       setError(null)
 
       try {
-        let customApi: string | undefined
-
-        // 处理自定义 API 源
-        if (sourceCode?.startsWith('custom_')) {
-          const customIndex = parseInt(sourceCode.replace('custom_', ''))
-          const customApiConfig = customAPIs[customIndex]
-          if (customApiConfig) {
-            customApi = customApiConfig.url
-          } else {
-            throw new Error('找不到对应的自定义 API 配置')
-          }
+        // 根据 sourceCode 找到对应的 API 配置
+        const api = videoAPIs.find(api => api.id === sourceCode)
+        if (!api) {
+          throw new Error('未找到对应的API配置')
         }
 
         // 获取视频详情
-        const response = await apiService.getVideoDetail(vodId, sourceCode, customApi)
+        const response = await apiService.getVideoDetail(vodId, api)
 
         if (response.code === 200 && response.episodes && response.episodes.length > 0) {
           setDetail(response)
@@ -90,7 +83,7 @@ export default function Video() {
               vod_content: response.videoInfo.desc,
               source_name: response.videoInfo.source_name,
               source_code: response.videoInfo.source_code,
-              api_url: customApi,
+              api_url: api.url,
             })
           }
         } else {
@@ -105,7 +98,7 @@ export default function Video() {
     }
 
     fetchVideoDetail()
-  }, [sourceCode, vodId, detail, videoItem, customAPIs])
+  }, [sourceCode, vodId, detail, videoItem, videoAPIs])
 
   // 监听 selectedEpisode 和 URL 参数变化
   useEffect(() => {

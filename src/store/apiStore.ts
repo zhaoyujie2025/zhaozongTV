@@ -2,6 +2,7 @@ import { create } from 'zustand'
 import { devtools, persist } from 'zustand/middleware'
 import { immer } from 'zustand/middleware/immer'
 import type { VideoApi } from '@/types'
+import { getInitialVideoSources } from '@/config/api.config'
 
 interface ApiState {
   // 自定义 API 列表
@@ -23,6 +24,8 @@ interface ApiActions {
   selectAllAPIs: () => void
   // 取消全选
   deselectAllAPIs: () => void
+  // 初始化环境变量中的视频源
+  initializeEnvSources: () => void
 }
 
 type ApiStore = ApiState & ApiActions
@@ -76,6 +79,28 @@ export const useApiStore = create<ApiStore>()(
         deselectAllAPIs: () => {
           set(state => {
             state.videoAPIs = state.videoAPIs.map(api => ({ ...api, isEnabled: false }))
+          })
+        },
+
+        initializeEnvSources: () => {
+          set(state => {
+            const envSources = getInitialVideoSources()
+            if (envSources.length > 0) {
+              // 只添加不存在的环境变量源
+              envSources.forEach(envSource => {
+                if (envSource) {
+                  // 确保 envSource 不为 null
+                  const exists = state.videoAPIs.some(
+                    api =>
+                      api.id === envSource.id ||
+                      (api.name === envSource.name && api.url === envSource.url),
+                  )
+                  if (!exists) {
+                    state.videoAPIs.push(envSource)
+                  }
+                }
+              })
+            }
           })
         },
       })),

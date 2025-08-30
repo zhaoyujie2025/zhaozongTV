@@ -23,3 +23,44 @@ export const API_CONFIG = {
 export const PROXY_URL =
   import.meta.env.VITE_PROXY_URL || 'https://api.codetabs.com/v1/proxy?quest='
 export const M3U8_PATTERN = /\$https?:\/\/[^"'\s]+?\.m3u8/g
+
+// 从环境变量获取初始视频源
+export const getInitialVideoSources = () => {
+  const envSources = import.meta.env.VITE_INITIAL_VIDEO_SOURCES
+  if (!envSources || typeof envSources !== 'string') {
+    return []
+  }
+
+  try {
+    // 清理多行JSON：移除不必要的换行符和空白字符，但保留JSON结构内的空格
+    const cleanedSources = envSources
+      .replace(/^\s*['"`]/, '') // 移除开头的引号
+      .replace(/['"`]\s*$/, '') // 移除结尾的引号
+      .trim()
+
+    // 解析 JSON 格式
+    const jsonSources = JSON.parse(cleanedSources)
+    const sources = Array.isArray(jsonSources) ? jsonSources : [jsonSources]
+
+    return sources
+      .map((source, index) => {
+        if (!source.name || !source.url) {
+          console.warn(`跳过无效的视频源配置: ${JSON.stringify(source)}`)
+          return null
+        }
+
+        return {
+          id: source.id || `env_source_${index}`,
+          name: source.name,
+          url: source.url,
+          detailUrl: source.detailUrl || source.url,
+          isEnabled: source.isEnabled !== undefined ? source.isEnabled : true,
+        }
+      })
+      .filter(Boolean)
+  } catch (error) {
+    console.error('解析环境变量中的视频源失败:', error)
+    console.error('环境变量内容:', envSources)
+    return []
+  }
+}

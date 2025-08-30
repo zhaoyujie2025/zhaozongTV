@@ -18,6 +18,12 @@
     - [💻 本地开发](#-本地开发)
     - [📦 构建 \& 预览](#-构建--预览)
   - [🌳 环境变量](#-环境变量)
+    - [基础配置](#基础配置)
+    - [初始视频源配置](#初始视频源配置)
+      - [配置格式](#配置格式)
+      - [字段说明](#字段说明)
+      - [配置示例](#配置示例)
+      - [在 Vercel 中配置](#在-vercel-中配置)
   - [🗂 项目结构](#-项目结构)
   - [⚙️ 配置](#️-配置)
   - [📋 常用命令](#-常用命令)
@@ -92,6 +98,8 @@ pnpm run preview
 
 ## 🌳 环境变量
 
+### 基础配置
+
 部署到 Vercel 时，需要在 Vercel 仪表盘的 **Environment Variables** 中添加以下变量：
 - `VITE_PROXY_URL`：`/api/proxy?url=`
 
@@ -99,6 +107,53 @@ pnpm run preview
 ```env
 VITE_PROXY_URL=https://cors.zme.ink/
 ```
+
+### 初始视频源配置
+
+您可以通过环境变量预配置视频源，应用启动时会自动加载这些源。
+
+#### 在 Vercel 中配置
+
+1. 在 Vercel 项目设置中找到 "Environment Variables"
+2. 添加新变量 `VITE_INITIAL_VIDEO_SOURCES`
+3. 填入您的 JSON 格式视频源配置
+4. 重新部署项目
+
+**支持的配置格式：**
+
+```bash
+# 单行格式（适合简单配置）
+[{"id":"source1","name":"示例源1","url":"https://api.example1.com","isEnabled":true}]
+
+# 多行格式（推荐，更易维护）
+[
+  {
+    "id": "source1",
+    "name": "示例源1",
+    "url": "https://api.example1.com",
+    "isEnabled": true
+  },
+  {
+    "id": "source2",
+    "name": "示例源2",
+    "url": "https://api.example2.com",
+    "detailUrl": "https://detail.example2.com",
+    "isEnabled": false
+  }
+]
+```
+
+**字段说明：**
+- `id`: 源的唯一标识符（可选，会自动生成）
+- `name`: 源的显示名称（必需）
+- `url`: 源的API地址（必需）
+- `detailUrl`: 详情API地址（可选，默认使用url）
+- `isEnabled`: 是否启用（可选，默认为true）
+
+**注意事项：**
+- 在 Vercel 中可以直接使用多行格式，平台会自动处理
+- 确保 JSON 格式正确，字段名必须用双引号
+- 本地开发时可参考 `.env.example` 文件中的示例
 
 ---
 

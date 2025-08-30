@@ -4,6 +4,7 @@ import React, { useEffect, useState, lazy, Suspense } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { useSearchHistory, useSearch } from '@/hooks'
 import { useVersionStore } from '@/store/versionStore'
+import { useApiStore } from '@/store/apiStore'
 const UpdateModal = lazy(() => import('@/components/UpdateModal'))
 import { Analytics } from '@vercel/analytics/react'
 import { SpeedInsights } from '@vercel/speed-insights/react'
@@ -21,6 +22,7 @@ function App() {
   const { searchHistory, removeSearchHistoryItem, clearSearchHistory } = useSearchHistory()
   const { search, setSearch, searchMovie } = useSearch()
   const { hasNewVersion, setShowUpdateModal } = useVersionStore()
+  const { initializeEnvSources } = useApiStore()
   const [buttonTransitionStatus, setButtonTransitionStatus] = useState({
     opacity: 0,
     filter: 'blur(5px)',
@@ -44,12 +46,16 @@ function App() {
     }
   }, [search])
 
-  // 检查版本更新
+  // 检查版本更新和初始化环境变量视频源
   useEffect(() => {
+    // 初始化环境变量中的视频源
+    initializeEnvSources()
+
+    // 检查版本更新
     if (hasNewVersion()) {
       setShowUpdateModal(true)
     }
-  }, [])
+  }, [initializeEnvSources, hasNewVersion, setShowUpdateModal])
 
   const handleSearch = () => {
     searchMovie(search)

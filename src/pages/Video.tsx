@@ -144,7 +144,6 @@ export default function Video() {
     const player = playerRef.current
     const normalAddHistory = () => {
       if (!sourceCode || !vodId) return
-      console.info(player.duration || 0)
       addViewingHistory({
         title: getTitle(),
         imageUrl: videoItem?.vod_pic || '',

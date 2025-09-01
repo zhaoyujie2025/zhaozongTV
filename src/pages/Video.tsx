@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from 'react'
 import { useLocation, useNavigate, useParams } from 'react-router'
 import Player from 'xgplayer'
+import { Events } from 'xgplayer'
 import HlsPlugin from 'xgplayer-hls'
 import 'xgplayer/dist/index.min.css'
 import { Card, CardHeader, CardBody, Button, Chip, Spinner } from '@heroui/react'
@@ -143,6 +144,7 @@ export default function Video() {
     const player = playerRef.current
     const normalAddHistory = () => {
       if (!sourceCode || !vodId) return
+      console.info(player.duration || 0)
       addViewingHistory({
         title: getTitle(),
         imageUrl: videoItem?.vod_pic || '',
@@ -156,9 +158,10 @@ export default function Video() {
       })
     }
 
-    player.on('play', normalAddHistory)
-    player.on('pause', normalAddHistory)
-    player.on('ended', normalAddHistory)
+    player.on(Events.PLAY, normalAddHistory)
+    player.on(Events.PAUSE, normalAddHistory)
+    player.on(Events.ENDED, normalAddHistory)
+    player.on(Events.ERROR, normalAddHistory)
 
     let lastTimeUpdate = 0
     const TIME_UPDATE_INTERVAL = 3000

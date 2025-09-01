@@ -29,6 +29,7 @@ export const useViewingHistoryStore = create<ViewingHistoryStore>()(
         // Actions
         addViewingHistory: (item: ViewingHistoryItem) => {
           set(state => {
+            if (item.duration <= 0) return
             // 检查是否已经存在相同视频的记录
             const existingIndex = state.viewingHistory.findIndex(
               historyItem =>
@@ -39,9 +40,7 @@ export const useViewingHistoryStore = create<ViewingHistoryStore>()(
 
             if (existingIndex !== -1) {
               // 更新现有记录
-              const existingItem = state.viewingHistory[existingIndex]
-              existingItem.timestamp = Date.now()
-              existingItem.playbackPosition = item.playbackPosition
+              const existingItem = { ...state.viewingHistory[existingIndex], ...item }
               // 移到最前面
               state.viewingHistory.splice(existingIndex, 1)
               state.viewingHistory.unshift(existingItem)

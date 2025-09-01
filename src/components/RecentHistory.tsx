@@ -94,7 +94,7 @@ const HistoryList = ({
                         content: 'text-[3cqw] md:text-xs',
                       }}
                     >
-                      {item.name}
+                      {item.sourceName}
                     </Chip>
                     <div className="flex items-center justify-center gap-[.6rem] text-[3.5cqw] text-gray-500 md:text-sm">
                       <p>{dayjs(item.timestamp).fromNow()}</p>

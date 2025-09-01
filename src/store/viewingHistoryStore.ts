@@ -77,11 +77,21 @@ export const useViewingHistoryStore = create<ViewingHistoryStore>()(
       })),
       {
         name: 'ouonnki-tv-viewing-history', // 持久化存储的键名
-        version: 2,
+        version: 2.1,
         migrate: (persistedState: unknown, version: number) => {
           if (version < 2) {
             return {
               viewingHistory: [], // 清空历史记录
+            }
+          }
+          if (version < 2.1) {
+            return {
+              viewingHistory: (
+                persistedState as { viewingHistory: ViewingHistoryItem[] }
+              ).viewingHistory.map(item => ({
+                ...item,
+                sourceName: item.sourceCode.slice(0, 5),
+              })),
             }
           }
           return persistedState

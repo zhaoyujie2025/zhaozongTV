@@ -54,6 +54,7 @@ export interface ViewingHistoryItem {
   imageUrl: string
   episodeIndex: number
   sourceCode: string
+  sourceName: string
   vodId: string
   timestamp: number
   playbackPosition: number
